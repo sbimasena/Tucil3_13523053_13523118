@@ -1,0 +1,61 @@
+=== Uniform Cost Search (UCS) Solution ===
+Nodes visited: 230
+Execution time: 6 ms
+Solution length: 6 moves
+
+Papan Awal
+AAB..F
+..BCDF
+GPPCDF
+GH.III
+GHJ...
+LLJMM.
+
+Gerakan 1: I-kiri
+AAB..F
+..BCDF
+GPPCDF
+GHIII.
+GHJ...
+LLJMM.
+
+Gerakan 2: F-bawah
+AAB...
+..BCDF
+GPPCDF
+GHIIIF
+GHJ...
+LLJMM.
+
+Gerakan 3: F-bawah
+AAB...
+..BCD.
+GPPCDF
+GHIIIF
+GHJ..F
+LLJMM.
+
+Gerakan 4: D-atas
+AAB.D.
+..BCD.
+GPPC.F
+GHIIIF
+GHJ..F
+LLJMM.
+
+Gerakan 5: F-bawah
+AAB.D.
+..BCD.
+GPPC..
+GHIIIF
+GHJ..F
+LLJMMF
+
+Gerakan 6: C-atas
+AABCD.
+..BCD.
+GPP...
+GHIIIF
+GHJ..F
+LLJMMF
+
