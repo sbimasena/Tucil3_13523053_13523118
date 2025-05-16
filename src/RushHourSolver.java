@@ -381,7 +381,8 @@ public class RushHourSolver {
 
         if (input.toLowerCase().startsWith("y")) {
             try {
-                String filename = RushHourIO.generateOutputFilename("solution", algorithm);
+                String filenameInputted = RushHourIO.getUserInput("Enter filename (without extension): ");
+                String filename = "output/" + filenameInputted + ".txt";
                 RushHourIO.writeSolutionToFile(algorithm.getSolution(),
                         algorithm.getSolutionActions(),
                         algorithm, filename);
