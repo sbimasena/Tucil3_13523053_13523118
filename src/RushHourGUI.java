@@ -33,6 +33,7 @@ public class RushHourGUI extends JFrame {
     private JButton loadButton;
     private JButton solveButton;
     private JButton resetButton;
+    private JButton saveButton; // New Save button
     private JLabel statusLabel;
 
     // Animation Control Components
@@ -148,12 +149,18 @@ public class RushHourGUI extends JFrame {
         solveButton.setEnabled(false);
         controlPanel.add(solveButton, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
+        gbc.gridx = 0; gbc.gridy = 3;
         resetButton = new JButton("Reset");
         controlPanel.add(resetButton, gbc);
+        
+        // Add the new Save Solution button
+        gbc.gridx = 1; gbc.gridy = 3;
+        saveButton = new JButton("Save Solution");
+        saveButton.setEnabled(false); // Initially disabled
+        controlPanel.add(saveButton, gbc);
 
         // Status label
-        gbc.gridy = 4;
+        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
         statusLabel = new JLabel("Ready - Load a puzzle to begin");
         statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
         controlPanel.add(statusLabel, gbc);
@@ -258,6 +265,9 @@ public class RushHourGUI extends JFrame {
 
         // Reset button handler
         resetButton.addActionListener(e -> resetGame());
+        
+        // Save button handler
+        saveButton.addActionListener(e -> saveSolution());
 
         // Animation control handlers
         playButton.addActionListener(e -> gameAnimation.play());
@@ -324,6 +334,9 @@ public class RushHourGUI extends JFrame {
 
                 // Clear previous results
                 clearResults();
+                
+                // Disable the save button since we don't have a solution yet
+                saveButton.setEnabled(false);
 
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this,
@@ -360,6 +373,7 @@ public class RushHourGUI extends JFrame {
             protected Void doInBackground() throws Exception {
                 statusLabel.setText("Solving puzzle...");
                 solveButton.setEnabled(false);
+                saveButton.setEnabled(false); // Disable save button during solving
 
                 // Create a copy of the game for solving
                 RushHourGame gameCopy = new RushHourGame(currentGame);
@@ -377,8 +391,13 @@ public class RushHourGUI extends JFrame {
                     displayResults();
                     setupAnimation();
                     statusLabel.setText("Solution found! Ready to animate.");
+                    
+                    // Enable save button now that we have a solution
+                    saveButton.setEnabled(true);
                 } else {
                     statusLabel.setText("No solution found.");
+                    saveButton.setEnabled(false); // Ensure save button is disabled
+                    
                     JOptionPane.showMessageDialog(RushHourGUI.this,
                             "No solution found for this puzzle.",
                             "No Solution",
@@ -388,6 +407,61 @@ public class RushHourGUI extends JFrame {
         };
 
         worker.execute();
+    }
+
+    /**
+     * Save the current solution to a file
+     */
+    private void saveSolution() {
+        if (currentSolution == null || currentSolution.isEmpty() || currentAlgorithm == null) {
+            JOptionPane.showMessageDialog(this,
+                    "No solution available to save!",
+                    "No Solution",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Text files", "txt"));
+        fileChooser.setCurrentDirectory(new File("."));
+        
+        // Generate a default filename based on algorithm
+        String defaultFilename = RushHourIO.generateOutputFilename("puzzle", currentAlgorithm);
+        fileChooser.setSelectedFile(new File(defaultFilename));
+
+        int result = fileChooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            
+            // Add .txt extension if not present
+            String filePath = selectedFile.getAbsolutePath();
+            if (!filePath.toLowerCase().endsWith(".txt")) {
+                filePath += ".txt";
+                selectedFile = new File(filePath);
+            }
+            
+            // Check if file exists and confirm overwrite
+            if (selectedFile.exists()) {
+                int response = JOptionPane.showConfirmDialog(this,
+                        "File already exists. Overwrite?",
+                        "Confirm Overwrite",
+                        JOptionPane.YES_NO_OPTION);
+                if (response != JOptionPane.YES_OPTION) {
+                    return;
+                }
+            }
+            
+            try {
+                RushHourIO.writeSolutionToFile(currentSolution, currentActions, currentAlgorithm, filePath);
+                statusLabel.setText("Solution saved to: " + selectedFile.getName());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Error saving solution:\n" + ex.getMessage(),
+                        "Save Error",
+                        JOptionPane.ERROR_MESSAGE);
+                statusLabel.setText("Error saving solution");
+            }
+        }
     }
 
     /**
@@ -473,6 +547,8 @@ public class RushHourGUI extends JFrame {
     private void updateGUIState(boolean puzzleLoaded) {
         solveButton.setEnabled(puzzleLoaded);
         resetButton.setEnabled(puzzleLoaded);
+        // Save button should only be enabled when there's a solution
+        saveButton.setEnabled(puzzleLoaded && currentSolution != null && !currentSolution.isEmpty());
     }
 
     /**
