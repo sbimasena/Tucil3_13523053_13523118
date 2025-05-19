@@ -56,7 +56,7 @@ Pastikan anda sudah memiliki:
   https://github.com/sbimasena/Tucil3_13523053_13523118.git
 ```
 
-2. **Pergi ke directory /Tucil3_13523053_13523118/src**
+2. **Pergi ke directory /Tucil3_13523053_13523118**
 
 ```bash
   cd Tucil3_13523053_13523118
