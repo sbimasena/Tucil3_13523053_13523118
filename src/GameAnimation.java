@@ -25,7 +25,7 @@ public class GameAnimation {
     
     // Animation states
     private enum AnimationState {
-        STOPPED, PLAYING, PAUSED
+        STOPPED, PLAYING, PAUSED, COMPLETED
     }
     
     private AnimationState currentState;
@@ -87,7 +87,7 @@ public class GameAnimation {
             return;
         }
         
-        if (currentState != AnimationState.PLAYING) {
+        if (currentState != AnimationState.PLAYING && currentState != AnimationState.COMPLETED) {
             currentState = AnimationState.PLAYING;
             isPlaying = true;
             
@@ -140,7 +140,11 @@ public class GameAnimation {
             
             // Check if we've reached the end
             if (currentStep >= solution.size() - 1) {
-                stop();
+                // Don't reset - just stop the timer and mark as completed
+                currentState = AnimationState.COMPLETED;
+                isPlaying = false;
+                animationTimer.stop();
+                
                 if (listener != null) {
                     listener.onAnimationComplete();
                 }
@@ -158,6 +162,12 @@ public class GameAnimation {
         
         if (currentStep > 0) {
             currentStep--;
+            
+            // If we were completed and step back, we're no longer completed
+            if (currentState == AnimationState.COMPLETED) {
+                currentState = AnimationState.STOPPED;
+            }
+            
             updateDisplay();
             
             if (listener != null) {
@@ -244,6 +254,14 @@ public class GameAnimation {
     }
     
     /**
+     * Check if animation is completed
+     * @return true if animation has reached the final step, false otherwise
+     */
+    public boolean isCompleted() {
+        return currentState == AnimationState.COMPLETED;
+    }
+    
+    /**
      * Check if there is a next step available
      * @return true if can step forward, false otherwise
      */
@@ -281,6 +299,16 @@ public class GameAnimation {
         
         step = Math.max(0, Math.min(step, solution.size() - 1));
         currentStep = step;
+        
+        // Update state based on the step we jumped to
+        if (step >= solution.size() - 1) {
+            currentState = AnimationState.COMPLETED;
+            isPlaying = false;
+            animationTimer.stop();
+        } else if (currentState == AnimationState.COMPLETED) {
+            currentState = AnimationState.STOPPED;
+        }
+        
         updateDisplay();
         
         if (listener != null) {
@@ -306,8 +334,11 @@ public class GameAnimation {
         if (hasNextStep()) {
             stepForward();
         } else {
-            // Animation complete
-            stop();
+            // Animation complete - don't reset, just stop and mark as completed
+            currentState = AnimationState.COMPLETED;
+            isPlaying = false;
+            animationTimer.stop();
+            
             if (listener != null) {
                 listener.onAnimationComplete();
             }

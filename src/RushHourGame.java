@@ -60,80 +60,83 @@ public class RushHourGame {
 
             RushHourGame game = new RushHourGame(rows, cols);
 
-            // Read board configuration
+            // Read all lines to find the board and exit
+            List<String> allLines = new ArrayList<>();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                allLines.add(line);
+            }
+
+            // Check for exit at the top (before the board)
+            boolean exitFound = false;
+            int startLine = 0;
+            
+            // Check if first line is just "K" (exit at top)
+            if (allLines.size() > 0 && allLines.get(0).trim().equals("K")) {
+                game.exitRow = -1;
+                game.exitCol = cols / 2; // Place at center of top border
+                exitFound = true;
+                startLine = 1;
+            }
+
+            // Read the board
             for (int i = 0; i < rows; i++) {
-                String line = reader.readLine();
-                if (line.length() == cols) {
-                    // Normal row without exit
-                    for (int j = 0; j < cols; j++) {
-                        char c = line.charAt(j);
-                        game.board[i][j] = c;
-
-                        if (c != '.' && c != 'K') {
-                            if (!game.pieces.containsKey(c)) {
-                                game.pieces.put(c, new ArrayList<>());
-                            }
-                            game.pieces.get(c).add(new int[]{i, j});
-
-                            if (c == 'P') {
-                                game.primaryRow = i;
-                                game.primaryCol = j;
-                            }
-                        } else if (c == 'K') {
-                            throw new IOException("Exit 'K' cannot be inside the board");
-                        }
-                    }
-                } else if (line.length() == cols + 1 && line.charAt(cols) == 'K') {
-                    // Row with exit K in the border
-                    for (int j = 0; j < cols; j++) {
-                        char c = line.charAt(j);
-                        game.board[i][j] = c;
-
-                        if (c != '.' && c != 'K') {
-                            if (!game.pieces.containsKey(c)) {
-                                game.pieces.put(c, new ArrayList<>());
-                            }
-                            game.pieces.get(c).add(new int[]{i, j});
-
-                            if (c == 'P') {
-                                game.primaryRow = i;
-                                game.primaryCol = j;
-                            }
-                        }
-                    }
-                    // Exit is in the right border at position (i, cols)
+                if (startLine + i >= allLines.size()) {
+                    throw new IOException("Not enough lines for board");
+                }
+                
+                String boardLine = allLines.get(startLine + i);
+                
+                // Check for exit on left side
+                if (boardLine.startsWith("K")) {
+                    game.exitRow = i;
+                    game.exitCol = -1;
+                    exitFound = true;
+                    boardLine = boardLine.substring(1); // Remove K from beginning
+                }
+                
+                // Check for exit on right side
+                if (boardLine.endsWith("K")) {
                     game.exitRow = i;
                     game.exitCol = cols;
-                } else {
-                    throw new IOException("Row " + (i + 1) + " has incorrect length. Expected " + cols + " or " + (cols + 1) + " (with K), got " + line.length());
+                    exitFound = true;
+                    boardLine = boardLine.substring(0, boardLine.length() - 1); // Remove K from end
+                }
+
+                // Process the board line
+                if (boardLine.length() != cols) {
+                    throw new IOException("Row " + (i + 1) + " has incorrect length. Expected " + cols + ", got " + boardLine.length());
+                }
+
+                for (int j = 0; j < cols; j++) {
+                    char c = boardLine.charAt(j);
+                    game.board[i][j] = c;
+
+                    if (c != '.') {
+                        if (!game.pieces.containsKey(c)) {
+                            game.pieces.put(c, new ArrayList<>());
+                        }
+                        game.pieces.get(c).add(new int[]{i, j});
+
+                        if (c == 'P') {
+                            game.primaryRow = i;
+                            game.primaryCol = j;
+                        }
+                    }
                 }
             }
 
-            // Validate that exit was found
-            boolean exitFound = false;
-            for (int i = 0; i < rows; i++) {
-                String line = reader.readLine();
-                if (line != null && line.length() == cols + 1 && line.charAt(cols) == 'K') {
+            // Check for exit at the bottom (after the board)
+            if (startLine + rows < allLines.size()) {
+                String bottomLine = allLines.get(startLine + rows);
+                if (bottomLine.trim().equals("K")) {
+                    game.exitRow = rows;
+                    game.exitCol = cols / 2; // Place at center of bottom border
                     exitFound = true;
                 }
             }
-            
-            // Reset reader and re-read properly
-            reader.close();
-            reader = new BufferedReader(new FileReader(filename));
-            reader.readLine(); // skip dimensions
-            reader.readLine(); // skip piece count
-            
-            boolean foundExit = false;
-            for (int i = 0; i < rows; i++) {
-                String line = reader.readLine();
-                if (line.length() == cols + 1 && line.charAt(cols) == 'K') {
-                    foundExit = true;
-                    break;
-                }
-            }
-            
-            if (!foundExit) {
+
+            if (!exitFound) {
                 throw new IOException("No exit 'K' found outside the board border");
             }
 
@@ -142,7 +145,6 @@ public class RushHourGame {
             reader.close();
         }
     }
-
     public boolean isGoalState() {
         // Check if primary piece can exit
         List<int[]> primaryPositions = pieces.get('P');
@@ -270,178 +272,134 @@ public class RushHourGame {
     }
 
     private void tryMoveHorizontal(List<RushHourGame> nextStates, char piece, int direction) {
-        List<int[]> positions = pieces.get(piece);
-        int row = positions.get(0)[0];
+    List<int[]> positions = pieces.get(piece);
+    int row = positions.get(0)[0];
 
-        int minCol = Integer.MAX_VALUE, maxCol = Integer.MIN_VALUE;
-        for (int[] pos : positions) {
-            minCol = Math.min(minCol, pos[1]);
-            maxCol = Math.max(maxCol, pos[1]);
+    int minCol = Integer.MAX_VALUE, maxCol = Integer.MIN_VALUE;
+    for (int[] pos : positions) {
+        minCol = Math.min(minCol, pos[1]);
+        maxCol = Math.max(maxCol, pos[1]);
+    }
+
+    int step = 1;
+    while (true) {
+        int newCol = (direction > 0) ? maxCol + step : minCol - step;
+
+        // Allow primary piece to exit if at the border
+        if (piece == 'P' && exitRow == row && newCol == exitCol) {
+            RushHourGame newState = new RushHourGame(this);
+            newState.primaryRow = row;
+            newState.primaryCol = exitCol;
+            nextStates.add(newState);
+            break;
         }
 
-        int newCol = (direction > 0) ? maxCol + 1 : minCol - 1;
+        // Check bounds
+        if (newCol < 0 || newCol >= cols) break;
 
-        // Special handling for primary piece exiting through border
-        if (piece == 'P' && exitRow == row && exitCol == cols && direction > 0) {
-            // Primary piece can exit through right border
-            if (maxCol == cols - 1) {
-                // Already at the edge, create goal state
-                RushHourGame newState = new RushHourGame(this);
-                newState.primaryCol = cols; // Indicate piece has exited
-                nextStates.add(newState);
-                return;
+        // Check all positions along the path
+        boolean clear = true;
+        for (int s = 1; s <= step; s++) {
+            int colToCheck = (direction > 0) ? maxCol + s : minCol - s;
+            if (colToCheck < 0 || colToCheck >= cols || board[row][colToCheck] != '.') {
+                clear = false;
+                break;
             }
         }
 
-        // Check bounds - primary piece can move out of bounds to exit
-        if (piece == 'P' && exitRow == row && exitCol == newCol) {
-            // Primary piece is exiting - this is allowed
-        } else if (newCol < 0 || newCol >= cols) {
-            return; // Out of bounds for non-exit move
-        }
-
-        // Check if target position is available
-        if (newCol >= 0 && newCol < cols) {
-            char target = board[row][newCol];
-            if (target != '.') return;
-        }
-
-        // Check if there's space for the entire piece to move
-        if (direction < 0) {
-            // Moving left
-            if (newCol < 0) return; // Out of bounds
-            if (board[row][newCol] != '.') return;
-        } else {
-            // Moving right
-            if (piece == 'P' && exitRow == row && newCol == cols) {
-                // Primary piece exiting - allowed
-            } else if (newCol >= cols) {
-                return; // Out of bounds
-            } else if (board[row][newCol] != '.') {
-                return;
-            }
-        }
+        if (!clear) break;
 
         // Create new state
         RushHourGame newState = new RushHourGame(this);
 
-        // Update board
-        if (direction > 0) {
-            // Moving right: clear leftmost, add rightmost
-            newState.board[row][minCol] = '.';
-            if (newCol < cols) {
-                newState.board[row][newCol] = piece;
-            }
-        } else {
-            // Moving left: clear rightmost, add leftmost
-            newState.board[row][maxCol] = '.';
-            if (newCol >= 0) {
-                newState.board[row][newCol] = piece;
-            }
+        // Clear old positions
+        for (int[] pos : positions) {
+            newState.board[pos[0]][pos[1]] = '.';
         }
 
-        // Update piece positions
+        // Create updated positions
         List<int[]> newPositions = new ArrayList<>();
         for (int[] pos : positions) {
-            newPositions.add(new int[]{pos[0], pos[1] + direction});
+            int newY = pos[1] + direction * step;
+            newState.board[row][newY] = piece;
+            newPositions.add(new int[]{row, newY});
         }
-        newState.pieces.put(piece, newPositions);
 
-        // Update primary piece position if necessary
+        newState.pieces.put(piece, newPositions);
         if (piece == 'P') {
             newState.primaryRow = row;
-            newState.primaryCol = positions.get(0)[1] + direction;
+            newState.primaryCol = newPositions.get(0)[1];
         }
 
         nextStates.add(newState);
+        step++;
+    }
+}
+
+   private void tryMoveVertical(List<RushHourGame> nextStates, char piece, int direction) {
+    List<int[]> positions = pieces.get(piece);
+    int col = positions.get(0)[1];
+
+    int minRow = Integer.MAX_VALUE, maxRow = Integer.MIN_VALUE;
+    for (int[] pos : positions) {
+        minRow = Math.min(minRow, pos[0]);
+        maxRow = Math.max(maxRow, pos[0]);
     }
 
-    private void tryMoveVertical(List<RushHourGame> nextStates, char piece, int direction) {
-        List<int[]> positions = pieces.get(piece);
-        int col = positions.get(0)[1];
+    int step = 1;
+    while (true) {
+        int newRow = (direction > 0) ? maxRow + step : minRow - step;
 
-        int minRow = Integer.MAX_VALUE, maxRow = Integer.MIN_VALUE;
-        for (int[] pos : positions) {
-            minRow = Math.min(minRow, pos[0]);
-            maxRow = Math.max(maxRow, pos[0]);
+        // Allow primary piece to exit if at the border
+        if (piece == 'P' && exitCol == col && newRow == exitRow) {
+            RushHourGame newState = new RushHourGame(this);
+            newState.primaryRow = exitRow;
+            newState.primaryCol = col;
+            nextStates.add(newState);
+            break;
         }
 
-        int newRow = (direction > 0) ? maxRow + 1 : minRow - 1;
+        // Check bounds
+        if (newRow < 0 || newRow >= rows) break;
 
-        // Special handling for primary piece exiting through border
-        if (piece == 'P' && exitCol == col && exitRow == rows && direction > 0) {
-            // Primary piece can exit through bottom border
-            if (maxRow == rows - 1) {
-                // Already at the edge, create goal state
-                RushHourGame newState = new RushHourGame(this);
-                newState.primaryRow = rows; // Indicate piece has exited
-                nextStates.add(newState);
-                return;
+        // Check all positions along the path
+        boolean clear = true;
+        for (int s = 1; s <= step; s++) {
+            int rowToCheck = (direction > 0) ? maxRow + s : minRow - s;
+            if (rowToCheck < 0 || rowToCheck >= rows || board[rowToCheck][col] != '.') {
+                clear = false;
+                break;
             }
         }
 
-        // Check bounds - primary piece can move out of bounds to exit
-        if (piece == 'P' && exitCol == col && exitRow == newRow) {
-            // Primary piece is exiting - this is allowed
-        } else if (newRow < 0 || newRow >= rows) {
-            return; // Out of bounds for non-exit move
-        }
-
-        // Check if target position is available
-        if (newRow >= 0 && newRow < rows) {
-            char target = board[newRow][col];
-            if (target != '.') return;
-        }
-
-        // Check if there's space for the entire piece to move
-        if (direction < 0) {
-            // Moving up
-            if (newRow < 0) return; // Out of bounds
-            if (board[newRow][col] != '.') return;
-        } else {
-            // Moving down
-            if (piece == 'P' && exitCol == col && newRow == rows) {
-                // Primary piece exiting - allowed
-            } else if (newRow >= rows) {
-                return; // Out of bounds
-            } else if (board[newRow][col] != '.') {
-                return;
-            }
-        }
+        if (!clear) break;
 
         // Create new state
         RushHourGame newState = new RushHourGame(this);
 
-        // Update board
-        if (direction > 0) {
-            // Moving down: clear topmost, add bottommost
-            newState.board[minRow][col] = '.';
-            if (newRow < rows) {
-                newState.board[newRow][col] = piece;
-            }
-        } else {
-            // Moving up: clear bottommost, add topmost
-            newState.board[maxRow][col] = '.';
-            if (newRow >= 0) {
-                newState.board[newRow][col] = piece;
-            }
+        // Clear old positions
+        for (int[] pos : positions) {
+            newState.board[pos[0]][pos[1]] = '.';
         }
 
-        // Update piece positions
+        // Create updated positions
         List<int[]> newPositions = new ArrayList<>();
         for (int[] pos : positions) {
-            newPositions.add(new int[]{pos[0] + direction, pos[1]});
+            int newX = pos[0] + direction * step;
+            newState.board[newX][col] = piece;
+            newPositions.add(new int[]{newX, col});
         }
-        newState.pieces.put(piece, newPositions);
 
-        // Update primary piece position if necessary
+        newState.pieces.put(piece, newPositions);
         if (piece == 'P') {
-            newState.primaryRow = positions.get(0)[0] + direction;
+            newState.primaryRow = newPositions.get(0)[0];
             newState.primaryCol = col;
         }
 
         nextStates.add(newState);
+        step++;
     }
+}
 
     // Calculate heuristic 1: Manhattan distance from primary piece to exit
     public int getHeuristic1() {

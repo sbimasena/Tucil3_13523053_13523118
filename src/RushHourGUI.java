@@ -281,7 +281,7 @@ public class RushHourGUI extends JFrame {
             gameAnimation.setSpeed(speed);
         });
 
-        // Animation event handler
+        // Updated animation event handler with better handling of the last step
         gameAnimation.setAnimationListener(new AnimationListener() {
             @Override
             public void onMoveChanged(int currentMove, int totalMoves) {
@@ -293,12 +293,22 @@ public class RushHourGUI extends JFrame {
                     resultsTextArea.append("Move " + currentMove + ": " + action + "\n");
                     resultsTextArea.setCaretPosition(resultsTextArea.getDocument().getLength());
                 }
+
+                // Special handling for the final move
+                if (currentMove == totalMoves) {
+                    statusLabel.setText("Solution complete! P has reached the exit.");
+                } else if (currentMove == 0) {
+                    statusLabel.setText("Initial state");
+                } else {
+                    statusLabel.setText("Playing animation... Step " + currentMove + "/" + totalMoves);
+                }
             }
 
             @Override
             public void onAnimationComplete() {
                 setAnimationControlsEnabled(true);
-                statusLabel.setText("Animation complete");
+                // Give user time to see the final state
+                statusLabel.setText("Animation complete - Solution shown. Use Reset to return to start.");
             }
 
             @Override
@@ -524,7 +534,14 @@ public class RushHourGUI extends JFrame {
                 moveLabel.setText("Move: 0/" + (currentSolution != null ? currentSolution.size() - 1 : 0));
             }
 
-            resultsTextArea.setText("");
+            // Clear only the solution steps from results, keep the statistics
+            if (currentAlgorithm != null) {
+                resultsTextArea.setText("");
+                resultsTextArea.append("Algorithm: " + currentAlgorithm.getAlgorithmName() + "\n");
+                resultsTextArea.append("Description: " + currentAlgorithm.getAlgorithmDescription() + "\n\n");
+                resultsTextArea.append("Solution Steps:\n");
+            }
+            
             statusLabel.setText("Game reset to initial state");
         }
     }
