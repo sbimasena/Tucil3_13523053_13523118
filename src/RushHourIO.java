@@ -341,13 +341,6 @@ public class RushHourIO {
                 writer.write(solution.get(i).toString());
                 writer.write("\n");
             }
-
-            // Write final board after removing primary piece
-            RushHourGame finalState = new RushHourGame(solution.get(solution.size() - 1));
-            finalState.removePrimaryPiece();
-            writer.write("Final Board (after exit):\n");
-            writer.write(finalState.toString());
-            writer.write("\n");
         } finally {
             writer.close();
         }
