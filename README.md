@@ -65,13 +65,18 @@ Pastikan anda sudah memiliki:
 3. **Compile program**
 
 ```bash
-  javac -d bin -sourcepath src src/*.java
+  javac src/*.java -d bin 
 ```
 
 4. **Jalankan program**
 
+GUI Game
 ```bash
   java -cp bin RushHourGUI
+```
+CLI Game
+```bash
+  java -cp bin RushHourSolver
 ```
 
 ## **📌 Cara Penggunaan**
