@@ -1,0 +1,77 @@
+=== Uniform Cost Search (UCS) Solution ===
+Nodes visited: 26
+Execution time: 3 ms
+Solution length: 8 moves
+
+Papan Awal
+..B...
+..B...
+PPB...
+CCC..D
+.....D
+.....D
+
+Gerakan 1: D-atas
+..B..D
+..B..D
+PPB..D
+CCC...
+......
+......
+
+Gerakan 2: C-kanan
+..B..D
+..B..D
+PPB..D
+...CCC
+......
+......
+
+Gerakan 3: B-bawah
+.....D
+.....D
+PP...D
+..BCCC
+..B...
+..B...
+
+Gerakan 4: P-kanan
+.....D
+.....D
+...PPD
+..BCCC
+..B...
+..B...
+
+Gerakan 5: B-atas
+..B..D
+..B..D
+..BPPD
+...CCC
+......
+......
+
+Gerakan 6: C-kiri
+..B..D
+..B..D
+..BPPD
+CCC...
+......
+......
+
+Gerakan 7: D-bawah
+..B...
+..B...
+..BPP.
+CCC..D
+.....D
+.....D
+
+Gerakan 8: EXIT
+..B...
+..B...
+..B...
+CCC..D
+.....D
+.....D
+

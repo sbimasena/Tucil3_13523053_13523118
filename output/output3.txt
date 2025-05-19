@@ -1,0 +1,77 @@
+=== A* Search Solution ===
+Nodes visited: 22
+Execution time: 2 ms
+Solution length: 8 moves
+
+Papan Awal
+...B..
+...B..
+...BPP
+D..CCC
+D.....
+D.....
+
+Gerakan 1: D-atas
+D..B..
+D..B..
+D..BPP
+...CCC
+......
+......
+
+Gerakan 2: C-kiri
+D..B..
+D..B..
+D..BPP
+CCC...
+......
+......
+
+Gerakan 3: B-bawah
+D.....
+D.....
+D...PP
+CCCB..
+...B..
+...B..
+
+Gerakan 4: P-kiri
+D.....
+D.....
+DPP...
+CCCB..
+...B..
+...B..
+
+Gerakan 5: B-atas
+D..B..
+D..B..
+DPPB..
+CCC...
+......
+......
+
+Gerakan 6: C-kanan
+D..B..
+D..B..
+DPPB..
+.CCC..
+......
+......
+
+Gerakan 7: D-bawah
+...B..
+...B..
+.PPB..
+DCCC..
+D.....
+D.....
+
+Gerakan 8: EXIT
+...B..
+...B..
+...B..
+DCCC..
+D.....
+D.....
+

@@ -1,0 +1,77 @@
+=== Greedy Best First Search (GBFS) Solution ===
+Nodes visited: 13
+Execution time: 2 ms
+Solution length: 8 moves
+
+Papan Awal
+...DDD
+......
+......
+BBBC..
+..PC..
+..PC..
+
+Gerakan 1: D-kiri
+DDD...
+......
+......
+BBBC..
+..PC..
+..PC..
+
+Gerakan 2: C-atas
+DDDC..
+...C..
+...C..
+BBB...
+..P...
+..P...
+
+Gerakan 3: B-kanan
+DDDC..
+...C..
+...C..
+...BBB
+..P...
+..P...
+
+Gerakan 4: P-atas
+DDDC..
+..PC..
+..PC..
+...BBB
+......
+......
+
+Gerakan 5: B-kiri
+DDDC..
+..PC..
+..PC..
+BBB...
+......
+......
+
+Gerakan 6: C-bawah
+DDD...
+..PC..
+..PC..
+BBBC..
+......
+......
+
+Gerakan 7: D-kanan
+...DDD
+..PC..
+..PC..
+BBBC..
+......
+......
+
+Gerakan 8: EXIT
+...DDD
+...C..
+...C..
+BBBC..
+......
+......
+
