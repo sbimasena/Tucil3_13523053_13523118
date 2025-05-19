@@ -2,8 +2,8 @@
 11
 AAB..F
 ..BCDF
-GPPCD.
-GH.CII
+G.PCD.
+GHPCII
 GHJ...
 LLJ.MM
-K
+  K

@@ -180,7 +180,13 @@ public class RushHourGame {
                     }
                     return true;
                 }
-            } else if (exitCol > maxCol) {
+            } else if (exitCol == -1) {
+                // Exit is at left edge
+                for (int j = exitCol + 1; j < minCol; j++) {
+                    if (board[exitRow][j] != '.') return false;
+                }
+                return true;
+             }else if (exitCol > maxCol) {
                 // Exit is to the right, check if path is clear
                 for (int j = maxCol + 1; j <= exitCol; j++) {
                     if (board[exitRow][j] != '.') {
@@ -223,7 +229,13 @@ public class RushHourGame {
                     }
                     return true;
                 }
-            } else if (exitRow > maxRow) {
+            } else if (exitRow == -1) {
+                // Exit is at top
+                for (int i = exitRow + 1; i < minRow; i++) {
+                    if (board[i][exitCol] != '.') return false;
+                }
+                return true;
+            }else if (exitRow > maxRow) {
                 // Exit is below, check if path is clear
                 for (int i = maxRow + 1; i <= exitRow; i++) {
                     if (board[i][exitCol] != '.') {

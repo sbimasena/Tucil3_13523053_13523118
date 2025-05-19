@@ -364,9 +364,49 @@ public class GamePanel extends JPanel {
             g2d.setColor(EXIT_COLOR);
             g2d.setFont(new Font("Arial", Font.BOLD, 14));
             g2d.drawString("EXIT", x + 35, y + 5);
+        } else if (exitCol == -1 && exitRow >= 0 && exitRow < rows) {
+            // Left exit
+            int y = boardY + exitRow * cellSize + cellSize / 2;
+            int x = boardX;
+            
+            // Draw arrow pointing left
+            g2d.drawLine(x, y, x - 30, y);
+            g2d.drawLine(x - 20, y - 10, x - 30, y);
+            g2d.drawLine(x - 20, y + 10, x - 30, y);
+            
+            // Draw EXIT text
+            g2d.setColor(EXIT_COLOR);
+            g2d.setFont(new Font("Arial", Font.BOLD, 14));
+            g2d.drawString("EXIT", x - 65, y + 5);
+        } else if (exitRow == -1 && exitCol >= 0 && exitCol < cols) {
+            // Top exit
+            int x = boardX + exitCol * cellSize + cellSize / 2;
+            int y = boardY;
+            
+            // Draw arrow pointing up
+            g2d.drawLine(x, y, x, y - 30);
+            g2d.drawLine(x - 10, y - 20, x, y - 30);
+            g2d.drawLine(x + 10, y - 20, x, y - 30);
+            
+            // Draw EXIT text
+            g2d.setColor(EXIT_COLOR);
+            g2d.setFont(new Font("Arial", Font.BOLD, 14));
+            g2d.drawString("EXIT", x - 20, y - 35);
+        } else if (exitRow == rows && exitCol >= 0 && exitCol < cols) {
+            // Bottom exit
+            int x = boardX + exitCol * cellSize + cellSize / 2;
+            int y = boardY + rows * cellSize;
+            
+            // Draw arrow pointing down
+            g2d.drawLine(x, y, x, y + 30);
+            g2d.drawLine(x - 10, y + 20, x, y + 30);
+            g2d.drawLine(x + 10, y + 20, x, y + 30);
+            
+            // Draw EXIT text
+            g2d.setColor(EXIT_COLOR);
+            g2d.setFont(new Font("Arial", Font.BOLD, 14));
+            g2d.drawString("EXIT", x - 20, y + 45);
         }
-        
-        // Add support for other exit positions (top, bottom, left) if needed
     }
     
     /**

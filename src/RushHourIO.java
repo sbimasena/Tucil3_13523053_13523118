@@ -45,34 +45,67 @@ public class RushHourIO {
             char[][] board = game.getBoard();
             boolean exitFound = false;
 
+
+            // Detect top exit before reading the board
+            String peekLine = reader.readLine();
+            if (peekLine != null && peekLine.trim().length() == 1 && peekLine.trim().charAt(0) == 'K') {
+                // Top exit line with only 'K' and spaces, e.g. "   K  "
+                int topExitCol = peekLine.indexOf('K');
+                game.setExitPosition(-1, topExitCol); // Exit is above the board
+                exitFound = true;
+                peekLine = reader.readLine(); // Move to first board line
+            }
+
             // Read board configuration
             for (int i = 0; i < rows; i++) {
-                String line = reader.readLine();
+                String line;
+                if (i == 0) {
+                    line = peekLine;
+                } else {
+                    line = reader.readLine();
+                }
                 if (line == null) {
                     throw new IOException("Unexpected end of file at row " + (i + 1));
                 }
-                
-                // Handle potential exit K outside the board bounds
-                if (line.length() == cols + 1 && line.charAt(cols) == 'K') {
-                    // Exit K is outside the board - place it as a boundary marker
+                // Do not trim leading spaces. Use first character to determine row type.
+                if (line.length() == cols + 1 && line.charAt(0) == 'K') {
+                    // Exit on left
+                    for (int j = 1; j <= cols; j++) {
+                        board[i][j - 1] = line.charAt(j);
+                    }
+                    game.setExitPosition(i, -1);
+                    exitFound = true;
+                } else if (line.length() == cols + 1 && line.charAt(cols) == 'K') {
+                    // Exit on right
                     for (int j = 0; j < cols; j++) {
                         board[i][j] = line.charAt(j);
                     }
-                    // Set exit position as edge position (outside the board)
                     game.setExitPosition(i, cols);
                     exitFound = true;
+                } else if (line.length() == cols + 1 && line.charAt(0) == ' ') {
+                    // Normal row with leading space for visual alignment
+                    for (int j = 1; j <= cols; j++) {
+                        board[i][j - 1] = line.charAt(j);
+                    }
                 } else if (line.length() == cols) {
-                    // Normal row
+                    // Normal row, no leading space
                     for (int j = 0; j < cols; j++) {
                         board[i][j] = line.charAt(j);
                     }
                 } else {
-                    throw new IOException("Row " + (i + 1) + " has incorrect length. Expected " + cols + " or " + (cols + 1) + " (with K), got " + line.length());
+                    System.err.println("DEBUG: Row " + (i + 1) + " line: '" + line + "' length: " + line.length() + ", cols: " + cols);
+                    throw new IOException("Row " + (i + 1) + " has incorrect length or invalid 'K' placement");
                 }
             }
 
-            // Check for other exit positions (top, bottom, left - though only right is in example)
-            // This is for completeness, though the current example only has right exit
+            // Check for bottom exit after reading the board
+            String bottomLine = reader.readLine();
+            if (bottomLine != null && bottomLine.trim().length() == 1 && bottomLine.trim().charAt(0) == 'K') {
+                int colK = bottomLine.indexOf('K');
+                game.setExitPosition(rows, colK); // Exit is below the board
+                exitFound = true;
+            }
+
             if (!exitFound) {
                 throw new IOException("No exit 'K' found outside the board boundaries");
             }
