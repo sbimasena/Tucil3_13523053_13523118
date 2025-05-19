@@ -2,57 +2,32 @@ package src;
 
 import java.util.*;
 
-/**
- * Abstract base class for all search algorithms
- */
+
 public abstract class SearchAlgorithm {
     protected int nodesVisited;
     protected long executionTime;
     protected List<RushHourGame> solution;
     protected List<String> solutionActions;
 
-    /**
-     * Solve the Rush Hour puzzle using the specific algorithm
-     * @param initial Initial game state
-     * @return List of game states representing the solution path, null if no solution
-     */
     public abstract List<RushHourGame> solve(RushHourGame initial);
 
-    /**
-     * Get the number of nodes visited during search
-     * @return Number of nodes visited
-     */
     public int getNodesVisited() {
         return nodesVisited;
     }
 
-    /**
-     * Get the execution time of the search
-     * @return Execution time in milliseconds
-     */
+
     public long getExecutionTime() {
         return executionTime;
     }
 
-    /**
-     * Get the solution path
-     * @return List of game states representing solution, null if no solution
-     */
     public List<RushHourGame> getSolution() {
         return solution;
     }
 
-    /**
-     * Get the actions taken in the solution
-     * @return List of action strings
-     */
     public List<String> getSolutionActions() {
         return solutionActions;
     }
 
-    /**
-     * Reset counters before starting a new search
-     */
     protected void resetCounters() {
         nodesVisited = 0;
         executionTime = 0;
@@ -60,11 +35,7 @@ public abstract class SearchAlgorithm {
         solutionActions = null;
     }
 
-    /**
-     * Build solution path from goal node
-     * @param goalNode The goal node containing the solution
-     * @return List of game states representing the solution path
-     */
+
     protected List<RushHourGame> buildSolution(SearchNode goalNode) {
         List<RushHourGame> path = new ArrayList<>();
         List<String> actions = new ArrayList<>();
@@ -82,12 +53,6 @@ public abstract class SearchAlgorithm {
         return path;
     }
 
-    /**
-     * Determine what action was taken to get from one state to another
-     * @param from Previous game state
-     * @param to Current game state
-     * @return String describing the action taken
-     */
     protected String getAction(RushHourGame from, RushHourGame to) {
     // Find which piece moved
     for (char piece : from.getPieces().keySet()) {
@@ -159,13 +124,6 @@ public abstract class SearchAlgorithm {
     return "Unknown";
 }
 
-    /**
-     * Check if a state exists in frontier with higher cost
-     * @param frontier The priority queue representing frontier
-     * @param state The state to check
-     * @param newCost The new cost for this state
-     * @return The existing node if found and has higher cost, null otherwise
-     */
     protected SearchNode findInFrontierWithHigherCost(PriorityQueue<SearchNode> frontier,
                                                       RushHourGame state, int newCost) {
         for (SearchNode n : frontier) {
@@ -176,12 +134,6 @@ public abstract class SearchAlgorithm {
         return null;
     }
 
-    /**
-     * Check if a state exists in frontier
-     * @param frontier The priority queue representing frontier
-     * @param state The state to check
-     * @return The existing node if found, null otherwise
-     */
     protected SearchNode findInFrontier(PriorityQueue<SearchNode> frontier, RushHourGame state) {
         for (SearchNode n : frontier) {
             if (n.state.equals(state)) {
@@ -191,9 +143,6 @@ public abstract class SearchAlgorithm {
         return null;
     }
 
-    /**
-     * Print the solution in the required format
-     */
     public void printSolution() {
         if (solution == null || solution.isEmpty()) {
             System.out.println("No solution found!");
@@ -217,22 +166,11 @@ public abstract class SearchAlgorithm {
         }
     }
 
-    /**
-     * Get algorithm name
-     * @return Name of the algorithm
-     */
     public abstract String getAlgorithmName();
 
-    /**
-     * Get algorithm description
-     * @return Description of the algorithm
-     */
     public abstract String getAlgorithmDescription();
 }
 
-/**
- * Node class used in search algorithms
- */
 class SearchNode implements Comparable<SearchNode> {
     public RushHourGame state;
     public SearchNode parent;
@@ -241,14 +179,6 @@ class SearchNode implements Comparable<SearchNode> {
     public int f; // Total cost (g + h)
     public String action; // Action taken to reach this state
 
-    /**
-     * Constructor for SearchNode
-     * @param state Game state
-     * @param parent Parent node
-     * @param g Cost from start
-     * @param h Heuristic value
-     * @param action Action taken to reach this state
-     */
     public SearchNode(RushHourGame state, SearchNode parent, int g, int h, String action) {
         this.state = state;
         this.parent = parent;
@@ -258,11 +188,6 @@ class SearchNode implements Comparable<SearchNode> {
         this.action = action;
     }
 
-    /**
-     * Compare nodes for priority queue ordering
-     * Default comparison is by f value (for A*)
-     * Override in specific algorithm implementations if needed
-     */
     @Override
     public int compareTo(SearchNode other) {
         if (this.f != other.f) {

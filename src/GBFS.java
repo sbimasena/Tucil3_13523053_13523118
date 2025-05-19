@@ -2,10 +2,6 @@ package src;
 
 import java.util.*;
 
-/**
- * Greedy Best First Search (GBFS) algorithm implementation for Rush Hour puzzle
- * GBFS uses heuristic to guide search toward the goal
- */
 public class GBFS extends SearchAlgorithm {
     private int heuristicType;
 
@@ -13,10 +9,6 @@ public class GBFS extends SearchAlgorithm {
     public static final int HEURISTIC_MANHATTAN = 1;
     public static final int HEURISTIC_BLOCKING_PIECES = 2;
 
-    /**
-     * Constructor for GBFS
-     * @param heuristicType Type of heuristic to use (1 or 2)
-     */
     public GBFS(int heuristicType) {
         this.heuristicType = heuristicType;
     }
@@ -78,11 +70,6 @@ public class GBFS extends SearchAlgorithm {
         return null; // No solution found
     }
 
-    /**
-     * Calculate heuristic value based on selected heuristic type
-     * @param state Game state to evaluate
-     * @return Heuristic value
-     */
     private int calculateHeuristic(RushHourGame state) {
         switch (heuristicType) {
             case HEURISTIC_MANHATTAN:
@@ -107,10 +94,6 @@ public class GBFS extends SearchAlgorithm {
                 "It's fast but doesn't guarantee optimal solution.";
     }
 
-    /**
-     * Get the name of the currently used heuristic
-     * @return Heuristic name
-     */
     public String getHeuristicName() {
         switch (heuristicType) {
             case HEURISTIC_MANHATTAN:
@@ -122,26 +105,14 @@ public class GBFS extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Get the heuristic type being used
-     * @return Heuristic type (1 or 2)
-     */
     public int getHeuristicType() {
         return heuristicType;
     }
 
-    /**
-     * Set the heuristic type
-     * @param heuristicType New heuristic type (1 or 2)
-     */
     public void setHeuristicType(int heuristicType) {
         this.heuristicType = heuristicType;
     }
 
-    /**
-     * Get statistics for this GBFS run
-     * @return Map containing various statistics
-     */
     public Map<String, Object> getStatistics() {
         Map<String, Object> stats = new HashMap<>();
         stats.put("algorithm", getAlgorithmName());
@@ -154,9 +125,6 @@ public class GBFS extends SearchAlgorithm {
         return stats;
     }
 
-    /**
-     * Print detailed information about the GBFS search
-     */
     @Override
     public void printSolution() {
         System.out.println("=== " + getAlgorithmName() + " Results ===");
@@ -194,11 +162,6 @@ public class GBFS extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Print board with colored output for primary piece, exit, and moved piece
-     * @param game The game state to print
-     * @param action The action that was taken (for highlighting moved piece)
-     */
     private void printColoredBoard(RushHourGame game, String action) {
         char[][] board = game.getBoard();
         int rows = game.getRows();
@@ -236,10 +199,6 @@ public class GBFS extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Analyze heuristic effectiveness
-     * @return Analysis of heuristic performance
-     */
     public String analyzeHeuristic() {
         if (solution == null) {
             return "No solution found - cannot analyze heuristic.";
@@ -281,11 +240,6 @@ public class GBFS extends SearchAlgorithm {
         return analysis.toString();
     }
 
-    /**
-     * Check if the heuristic is admissible
-     * Note: This is a simplified check and may not be completely accurate
-     * @return true if heuristic appears to be admissible
-     */
     public boolean isHeuristicAdmissible() {
         // Heuristic 1 (Manhattan distance) is generally admissible for Rush Hour
         // Heuristic 2 might overestimate in some cases, making it non-admissible
@@ -299,10 +253,7 @@ public class GBFS extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Guarantees optimal solution?
-     * @return false, as GBFS doesn't guarantee optimal solution
-     */
+
     public boolean guaranteesOptimalSolution() {
         return false;
     }

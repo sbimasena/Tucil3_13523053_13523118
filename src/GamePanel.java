@@ -7,10 +7,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Map;
 
-/**
- * GamePanel handles the visual rendering of the Rush Hour game board
- * It draws the board, pieces, and exit in a graphical format
- */
+
 public class GamePanel extends JPanel {
     private RushHourGame game;
     private int cellSize;
@@ -34,9 +31,7 @@ public class GamePanel extends JPanel {
         PRIMARY, EXIT, MOVED, OTHER, EMPTY
     }
     
-    /**
-     * Constructor for GamePanel
-     */
+   
     public GamePanel() {
         this.game = null;
         this.boardMargin = 50;
@@ -61,10 +56,7 @@ public class GamePanel extends JPanel {
         });
     }
     
-    /**
-     * Set the game instance to display
-     * @param game The game to render
-     */
+
     public void setGame(RushHourGame game) {
         this.game = game;
         this.lastAction = null;
@@ -72,10 +64,7 @@ public class GamePanel extends JPanel {
         repaint();
     }
     
-    /**
-     * Set the last action taken (for highlighting moved piece)
-     * @param action The action string (e.g., "P-kanan")
-     */
+
     public void setLastAction(String action) {
         this.lastAction = action;
         this.highlightedPiece = '.';
@@ -89,9 +78,6 @@ public class GamePanel extends JPanel {
         repaint();
     }
     
-    /**
-     * Paint the game board and pieces
-     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -122,10 +108,7 @@ public class GamePanel extends JPanel {
         
         g2d.dispose();
     }
-    
-    /**
-     * Draw empty board when no game is loaded
-     */
+
     private void drawEmptyBoard(Graphics g) {
         g.setColor(Color.GRAY);
         g.setFont(new Font("Arial", Font.BOLD, 24));
@@ -135,10 +118,7 @@ public class GamePanel extends JPanel {
         int y = getHeight() / 2;
         g.drawString(text, x, y);
     }
-    
-    /**
-     * Calculate dimensions based on current panel size
-     */
+
     private void calculateDimensions() {
         if (game == null) return;
         
@@ -151,10 +131,7 @@ public class GamePanel extends JPanel {
         cellSize = Math.min(availableWidth / cols, availableHeight / rows);
         cellSize = Math.max(cellSize, 20); // Minimum cell size
     }
-    
-    /**
-     * Draw the board background
-     */
+
     private void drawBoardBackground(Graphics2D g2d) {
         int rows = game.getRows();
         int cols = game.getCols();
@@ -169,10 +146,7 @@ public class GamePanel extends JPanel {
         g2d.setColor(BOARD_COLOR);
         g2d.fillRect(boardX - 5, boardY - 5, boardWidth + 10, boardHeight + 10);
     }
-    
-    /**
-     * Draw the board walls (border)
-     */
+
     private void drawBoardWalls(Graphics2D g2d) {
         int rows = game.getRows();
         int cols = game.getCols();
@@ -212,10 +186,7 @@ public class GamePanel extends JPanel {
         // Draw other exit walls if needed (top, bottom, left)
         // This extends the current implementation to support exits on all sides
     }
-    
-    /**
-     * Draw the grid lines
-     */
+
     private void drawGrid(Graphics2D g2d) {
         int rows = game.getRows();
         int cols = game.getCols();
@@ -240,10 +211,7 @@ public class GamePanel extends JPanel {
             g2d.drawLine(boardX, y, boardX + boardWidth, y);
         }
     }
-    
-    /**
-     * Draw the game cells with pieces
-     */
+
     private void drawCells(Graphics2D g2d) {
         char[][] board = game.getBoard();
         int rows = game.getRows();
@@ -273,10 +241,7 @@ public class GamePanel extends JPanel {
             }
         }
     }
-    
-    /**
-     * Determine the type of piece for coloring
-     */
+
     private PieceType getPieceType(char piece) {
         if (piece == '.') {
             return PieceType.EMPTY;
@@ -290,10 +255,7 @@ public class GamePanel extends JPanel {
             return PieceType.OTHER;
         }
     }
-    
-    /**
-     * Draw a piece in a cell
-     */
+
     private void drawPiece(Graphics2D g2d, int x, int y, char piece, PieceType type) {
         Color pieceColor;
         
@@ -332,10 +294,7 @@ public class GamePanel extends JPanel {
         int textY = y + (cellSize + fm.getAscent()) / 2;
         g2d.drawString(String.valueOf(piece), textX, textY);
     }
-    
-    /**
-     * Draw the exit indicator
-     */
+
     private void drawExit(Graphics2D g2d) {
         int exitRow = game.getExitRow();
         int exitCol = game.getExitCol();
@@ -408,10 +367,7 @@ public class GamePanel extends JPanel {
             g2d.drawString("EXIT", x - 20, y + 45);
         }
     }
-    
-    /**
-     * Draw game information
-     */
+
     private void drawGameInfo(Graphics2D g2d) {
         if (game == null) return;
         
@@ -436,10 +392,7 @@ public class GamePanel extends JPanel {
         y += 20;
         drawLegend(g2d, 10, y);
     }
-    
-    /**
-     * Draw color legend
-     */
+
     private void drawLegend(Graphics2D g2d, int x, int y) {
         int legendSize = 15;
         int spacing = 100;
@@ -471,12 +424,7 @@ public class GamePanel extends JPanel {
         g2d.setColor(Color.BLACK);
         g2d.drawString("Exit", x + legendSize + 5, y + 12);
     }
-    
-    /**
-     * Get cell coordinates from mouse point
-     * @param point Mouse click point
-     * @return Cell coordinates (row, col) or null if outside board
-     */
+
     private Point getCellFromPoint(Point point) {
         if (game == null) return null;
         
@@ -498,10 +446,7 @@ public class GamePanel extends JPanel {
         
         return null;
     }
-    
-    /**
-     * Handle cell click (for debugging/testing)
-     */
+
     private void onCellClicked(int row, int col) {
         if (game == null) return;
         
@@ -511,19 +456,11 @@ public class GamePanel extends JPanel {
             System.out.println("Clicked cell (" + row + ", " + col + "): " + cell);
         }
     }
-    
-    /**
-     * Get the current cell size (useful for animations)
-     * @return Current cell size in pixels
-     */
+
     public int getCellSize() {
         return cellSize;
     }
-    
-    /**
-     * Get the board drawing offset (useful for animations)
-     * @return Point representing the top-left corner of the board
-     */
+
     public Point getBoardOffset() {
         if (game == null) return new Point(0, 0);
         
@@ -534,10 +471,7 @@ public class GamePanel extends JPanel {
         
         return new Point(boardX, boardY);
     }
-    
-    /**
-     * Force recalculation of dimensions on next paint
-     */
+
     public void recalculateDimensions() {
         calculateDimensions();
         repaint();

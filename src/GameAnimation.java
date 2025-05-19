@@ -5,10 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-/**
- * GameAnimation handles the animated playback of Rush Hour puzzle solutions
- * It controls the timing and progression of moves during solution animation
- */
 public class GameAnimation {
     private GamePanel gamePanel;
     private List<RushHourGame> solution;
@@ -30,10 +26,7 @@ public class GameAnimation {
     
     private AnimationState currentState;
     
-    /**
-     * Constructor for GameAnimation
-     * @param gamePanel The panel that displays the game board
-     */
+
     public GameAnimation(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         this.currentStep = 0;
@@ -45,9 +38,7 @@ public class GameAnimation {
         initializeTimer();
     }
     
-    /**
-     * Initialize the animation timer
-     */
+
     private void initializeTimer() {
         int delay = calculateDelay();
         animationTimer = new Timer(delay, new ActionListener() {
@@ -59,12 +50,7 @@ public class GameAnimation {
             }
         });
     }
-    
-    /**
-     * Set the solution to animate
-     * @param solution List of game states representing the solution
-     * @param actions List of actions taken to reach each state
-     */
+
     public void setSolution(List<RushHourGame> solution, List<String> actions) {
         if (solution == null || solution.isEmpty()) {
             throw new IllegalArgumentException("Solution cannot be null or empty");
@@ -78,10 +64,7 @@ public class GameAnimation {
         this.actions = actions;
         reset();
     }
-    
-    /**
-     * Start or resume animation playback
-     */
+
     public void play() {
         if (solution == null || solution.isEmpty()) {
             return;
@@ -100,10 +83,7 @@ public class GameAnimation {
             animationTimer.start();
         }
     }
-    
-    /**
-     * Pause animation playback
-     */
+
     public void pause() {
         if (currentState == AnimationState.PLAYING) {
             currentState = AnimationState.PAUSED;
@@ -111,20 +91,14 @@ public class GameAnimation {
             animationTimer.stop();
         }
     }
-    
-    /**
-     * Stop animation and reset to beginning
-     */
+
     public void stop() {
         currentState = AnimationState.STOPPED;
         isPlaying = false;
         animationTimer.stop();
         reset();
     }
-    
-    /**
-     * Step forward one move in the animation
-     */
+
     public void stepForward() {
         if (solution == null || solution.isEmpty()) {
             return;
@@ -151,10 +125,7 @@ public class GameAnimation {
             }
         }
     }
-    
-    /**
-     * Step backward one move in the animation
-     */
+
     public void stepBackward() {
         if (solution == null || solution.isEmpty()) {
             return;
@@ -175,10 +146,7 @@ public class GameAnimation {
             }
         }
     }
-    
-    /**
-     * Reset animation to the beginning
-     */
+
     public void reset() {
         currentStep = 0;
         currentState = AnimationState.STOPPED;
@@ -191,11 +159,7 @@ public class GameAnimation {
             listener.onMoveChanged(currentStep, solution.size() - 1);
         }
     }
-    
-    /**
-     * Set the animation speed
-     * @param speed Speed from 1 (slowest) to 10 (fastest)
-     */
+
     public void setSpeed(int speed) {
         this.animationSpeed = Math.max(1, Math.min(10, speed));
         
@@ -204,94 +168,50 @@ public class GameAnimation {
             animationTimer.setDelay(calculateDelay());
         }
     }
-    
-    /**
-     * Get the current animation speed
-     * @return Current speed (1-10)
-     */
+
     public int getSpeed() {
         return animationSpeed;
     }
-    
-    /**
-     * Set the animation listener for callbacks
-     * @param listener The listener to receive animation events
-     */
+
     public void setAnimationListener(AnimationListener listener) {
         this.listener = listener;
     }
-    
-    /**
-     * Get the current step in the animation
-     * @return Current step number (0-based)
-     */
+
     public int getCurrentStep() {
         return currentStep;
     }
-    
-    /**
-     * Get the total number of steps in the solution
-     * @return Total steps, or 0 if no solution loaded
-     */
+
     public int getTotalSteps() {
         return solution != null ? solution.size() - 1 : 0;
     }
-    
-    /**
-     * Check if animation is currently playing
-     * @return true if playing, false otherwise
-     */
+
     public boolean isPlaying() {
         return isPlaying;
     }
     
-    /**
-     * Check if animation is paused
-     * @return true if paused, false otherwise
-     */
     public boolean isPaused() {
         return currentState == AnimationState.PAUSED;
     }
-    
-    /**
-     * Check if animation is completed
-     * @return true if animation has reached the final step, false otherwise
-     */
+
     public boolean isCompleted() {
         return currentState == AnimationState.COMPLETED;
     }
-    
-    /**
-     * Check if there is a next step available
-     * @return true if can step forward, false otherwise
-     */
+
     public boolean hasNextStep() {
         return solution != null && currentStep < solution.size() - 1;
     }
-    
-    /**
-     * Check if there is a previous step available
-     * @return true if can step backward, false otherwise
-     */
+
     public boolean hasPreviousStep() {
         return solution != null && currentStep > 0;
     }
-    
-    /**
-     * Get the current action being displayed
-     * @return Action string or null if none
-     */
+
     public String getCurrentAction() {
         if (actions != null && currentStep > 0 && currentStep <= actions.size()) {
             return actions.get(currentStep - 1);
         }
         return null;
     }
-    
-    /**
-     * Jump to a specific step in the animation
-     * @param step Step number to jump to (0-based)
-     */
+
     public void jumpToStep(int step) {
         if (solution == null || solution.isEmpty()) {
             return;
@@ -315,21 +235,14 @@ public class GameAnimation {
             listener.onMoveChanged(currentStep, solution.size() - 1);
         }
     }
-    
-    /**
-     * Calculate animation delay based on speed setting
-     * @return Delay in milliseconds
-     */
+
     private int calculateDelay() {
         // Convert speed (1-10) to delay (2000-200 ms)
         // Speed 1 = 2000ms, Speed 10 = 200ms
         int delay = BASE_DELAY - ((animationSpeed - 1) * (BASE_DELAY - MIN_DELAY) / 9);
         return Math.max(MIN_DELAY, delay);
     }
-    
-    /**
-     * Move to the next step in the animation
-     */
+
     private void nextStep() {
         if (hasNextStep()) {
             stepForward();
@@ -344,10 +257,7 @@ public class GameAnimation {
             }
         }
     }
-    
-    /**
-     * Update the game panel display with current state
-     */
+
     private void updateDisplay() {
         if (solution == null || solution.isEmpty()) {
             return;
@@ -368,11 +278,7 @@ public class GameAnimation {
         // Force repaint
         gamePanel.repaint();
     }
-    
-    /**
-     * Get animation information as a string
-     * @return String containing current animation status
-     */
+
     public String getAnimationInfo() {
         if (solution == null) {
             return "No solution loaded";
@@ -389,12 +295,7 @@ public class GameAnimation {
         
         return info.toString();
     }
-    
-    /**
-     * Create a simple text-based progress bar
-     * @param width Width of the progress bar in characters
-     * @return Progress bar string
-     */
+
     public String getProgressBar(int width) {
         if (solution == null || solution.isEmpty()) {
             return "[" + " ".repeat(width) + "]";
@@ -417,11 +318,7 @@ public class GameAnimation {
         
         return bar.toString();
     }
-    
-    /**
-     * Get detailed step information
-     * @return Step details including board state and action
-     */
+
     public String getStepDetails() {
         if (solution == null || currentStep >= solution.size()) {
             return "No step information available";
@@ -438,10 +335,7 @@ public class GameAnimation {
         
         return details.toString();
     }
-    
-    /**
-     * Dispose of resources used by the animation
-     */
+
     public void dispose() {
         if (animationTimer != null) {
             animationTimer.stop();

@@ -2,10 +2,6 @@ package src;
 
 import java.util.*;
 
-/**
- * A* Search algorithm implementation for Rush Hour puzzle
- * A* uses both path cost (g) and heuristic (h) to find optimal solution
- */
 public class AStar extends SearchAlgorithm {
     private int heuristicType;
 
@@ -13,10 +9,7 @@ public class AStar extends SearchAlgorithm {
     public static final int HEURISTIC_MANHATTAN = 1;
     public static final int HEURISTIC_BLOCKING_PIECES = 2;
 
-    /**
-     * Constructor for A*
-     * @param heuristicType Type of heuristic to use (1 or 2)
-     */
+ 
     public AStar(int heuristicType) {
         this.heuristicType = heuristicType;
     }
@@ -102,11 +95,6 @@ public class AStar extends SearchAlgorithm {
         return null; // No solution found
     }
 
-    /**
-     * Remove a specific state from frontier (helper method)
-     * @param frontier The frontier priority queue
-     * @param state The state to remove
-     */
     private void removeFromFrontier(PriorityQueue<SearchNode> frontier, RushHourGame state) {
         Iterator<SearchNode> iterator = frontier.iterator();
         while (iterator.hasNext()) {
@@ -118,11 +106,6 @@ public class AStar extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Calculate heuristic value based on selected heuristic type
-     * @param state Game state to evaluate
-     * @return Heuristic value
-     */
     private int calculateHeuristic(RushHourGame state) {
         switch (heuristicType) {
             case HEURISTIC_MANHATTAN:
@@ -147,10 +130,6 @@ public class AStar extends SearchAlgorithm {
                 "Guarantees optimal solution when heuristic is admissible.";
     }
 
-    /**
-     * Get the name of the currently used heuristic
-     * @return Heuristic name
-     */
     public String getHeuristicName() {
         switch (heuristicType) {
             case HEURISTIC_MANHATTAN:
@@ -162,26 +141,14 @@ public class AStar extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Get the heuristic type being used
-     * @return Heuristic type (1 or 2)
-     */
     public int getHeuristicType() {
         return heuristicType;
     }
 
-    /**
-     * Set the heuristic type
-     * @param heuristicType New heuristic type (1 or 2)
-     */
     public void setHeuristicType(int heuristicType) {
         this.heuristicType = heuristicType;
     }
 
-    /**
-     * Get statistics for this A* run
-     * @return Map containing various statistics
-     */
     public Map<String, Object> getStatistics() {
         Map<String, Object> stats = new HashMap<>();
         stats.put("algorithm", getAlgorithmName());
@@ -194,10 +161,6 @@ public class AStar extends SearchAlgorithm {
         return stats;
     }
 
-    /**
-     * Check if the current heuristic is admissible
-     * @return true if heuristic is admissible
-     */
     public boolean isHeuristicAdmissible() {
         switch (heuristicType) {
             case HEURISTIC_MANHATTAN:
@@ -209,9 +172,6 @@ public class AStar extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Print detailed information about the A* search
-     */
     @Override
     public void printSolution() {
         System.out.println("=== " + getAlgorithmName() + " Results ===");
@@ -255,11 +215,6 @@ public class AStar extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Print board with colored output for primary piece, exit, and moved piece
-     * @param game The game state to print
-     * @param action The action that was taken (for highlighting moved piece)
-     */
     private void printColoredBoard(RushHourGame game, String action) {
         char[][] board = game.getBoard();
         int rows = game.getRows();
@@ -297,10 +252,6 @@ public class AStar extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Analyze the effectiveness of A* with current heuristic
-     * @return Analysis of A* performance
-     */
     public String analyzeAlgorithm() {
         if (solution == null) {
             return "No solution found - cannot analyze algorithm.";
@@ -349,10 +300,6 @@ public class AStar extends SearchAlgorithm {
         return analysis.toString();
     }
 
-    /**
-     * Compare A* efficiency with UCS theoretically
-     * @return Theoretical comparison result
-     */
     public String compareWithUCS() {
         StringBuilder comparison = new StringBuilder();
         comparison.append("A* vs UCS Theoretical Comparison:\n");
@@ -373,10 +320,6 @@ public class AStar extends SearchAlgorithm {
         return comparison.toString();
     }
 
-    /**
-     * Guarantees optimal solution?
-     * @return true if heuristic is admissible, false otherwise
-     */
     public boolean guaranteesOptimalSolution() {
         return isHeuristicAdmissible();
     }

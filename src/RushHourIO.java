@@ -3,18 +3,7 @@ package src;
 import java.io.*;
 import java.util.*;
 
-/**
- * RushHourIO handles all input/output operations for the Rush Hour puzzle solver
- * This includes reading test cases, writing solutions, and formatting output
- */
 public class RushHourIO {
-
-    /**
-     * Load a Rush Hour game from a text file
-     * @param filename Path to the test case file
-     * @return RushHourGame object representing the initial state
-     * @throws IOException if file cannot be read or format is invalid
-     */
     public static RushHourGame loadGameFromFile(String filename) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filename));
 
@@ -48,11 +37,10 @@ public class RushHourIO {
             // Detect top exit before reading the board
             String peekLine = reader.readLine();
             if (peekLine != null && peekLine.trim().length() == 1 && peekLine.trim().charAt(0) == 'K') {
-                // Top exit line with only 'K' and spaces, e.g. "   K  "
                 int topExitCol = peekLine.indexOf('K');
-                game.setExitPosition(-1, topExitCol); // Exit is above the board
+                game.setExitPosition(-1, topExitCol);
                 exitFound = true;
-                peekLine = reader.readLine(); // Move to first board line
+                peekLine = reader.readLine();
             }
 
             // Read all lines after header and possible top exit
@@ -85,7 +73,7 @@ public class RushHourIO {
             for (int i = 0; i < boardLines.size(); i++) {
                 String bl = boardLines.get(i);
                 int expected1 = cols;
-                int expected2 = cols + 1; // for possible exit/leading space
+                int expected2 = cols + 1; 
                 if (bl.length() != expected1 && bl.length() != expected2) {
                     throw new IOException("Row " + (i + 1) + " has incorrect length: expected " + expected1 + " or " + expected2 + ", got " + bl.length());
                 }
@@ -94,7 +82,6 @@ public class RushHourIO {
             // Fill the board as before
             for (int i = 0; i < rows; i++) {
                 String bl = boardLines.get(i);
-                // Do not trim leading spaces. Use first character to determine row type.
                 if (bl.length() == cols + 1 && bl.charAt(0) == 'K') {
                     // Exit on left
                     for (int j = 1; j <= cols; j++) {
@@ -110,12 +97,10 @@ public class RushHourIO {
                     game.setExitPosition(i, cols);
                     exitFound = true;
                 } else if (bl.length() == cols + 1 && bl.charAt(0) == ' ') {
-                    // Normal row with leading space for visual alignment
                     for (int j = 1; j <= cols; j++) {
                         board[i][j - 1] = bl.charAt(j);
                     }
                 } else if (bl.length() == cols) {
-                    // Normal row, no leading space
                     for (int j = 0; j < cols; j++) {
                         board[i][j] = bl.charAt(j);
                     }
@@ -128,16 +113,14 @@ public class RushHourIO {
             if (bottomExitIdx != -1) {
                 String bottomLine = allLines.get(bottomExitIdx);
                 int colK = bottomLine.indexOf('K');
-                game.setExitPosition(rows, colK); // Exit is below the board
+                game.setExitPosition(rows, colK); 
                 exitFound = true;
-                // Check for extra non-empty lines after bottom exit
                 for (int i = bottomExitIdx + 1; i < allLines.size(); i++) {
                     if (!allLines.get(i).trim().isEmpty()) {
                         throw new IOException("Extra non-empty line found after board and exit: '" + allLines.get(i) + "'");
                     }
                 }
             } else {
-                // Check for extra non-empty lines after board
                 for (int i = boardEndIdx; i < allLines.size(); i++) {
                     if (!allLines.get(i).trim().isEmpty()) {
                         throw new IOException("Extra non-empty line found after board: '" + allLines.get(i) + "'");
@@ -175,11 +158,6 @@ public class RushHourIO {
         }
     }
 
-    /**
-     * Validate game configuration and initialize piece tracking
-     * @param game The game to validate and initialize
-     * @throws IOException if game configuration is invalid
-     */
     private static void validateAndInitializeGame(RushHourGame game) throws IOException {
         char[][] board = game.getBoard();
         int rows = game.getRows();
@@ -196,12 +174,10 @@ public class RushHourIO {
                 if (c == 'P') {
                     foundPrimary = true;
                     game.addPiecePosition(c, i, j);
-                    // Set first occurrence as primary position
                     if (game.getPrimaryRow() == 0 && game.getPrimaryCol() == 0) {
                         game.setPrimaryPosition(i, j);
                     }
                 } else if (c == 'K') {
-                    // K should never be inside the board with new format
                     throw new IOException("Exit 'K' found inside the board at (" + i + ", " + j + "). Exit must be outside the board.");
                 } else if (c != '.' && c != 'K') {
                     // Regular piece
@@ -275,23 +251,13 @@ public class RushHourIO {
         }
     }
 
-    /**
-     * Check the orientation of the primary piece
-     * @param game The game instance
-     * @return true if horizontal, false if vertical
-     */
     private static boolean checkPrimaryOrientation(RushHourGame game) {
         List<int[]> primaryPositions = game.getPieces().get('P');
-        if (primaryPositions.size() < 2) return true; // Default to horizontal
+        if (primaryPositions.size() < 2) return true; 
         
         return primaryPositions.get(0)[0] == primaryPositions.get(1)[0];
     }
 
-    /**
-     * Check if a piece forms a valid continuous line (horizontal or vertical)
-     * @param positions List of positions occupied by the piece
-     * @return true if valid, false otherwise
-     */
     private static boolean isValidPieceShape(List<int[]> positions) {
         if (positions.size() < 2) return false;
 
@@ -326,12 +292,6 @@ public class RushHourIO {
         return vertical;
     }
 
-    /**
-     * Write solution to console with colored output
-     * @param solution List of game states representing the solution
-     * @param actions List of actions taken
-     * @param algorithm The search algorithm used
-     */
     public static void writeSolutionToConsole(List<RushHourGame> solution, List<String> actions, SearchAlgorithm algorithm) {
         if (solution == null || solution.isEmpty()) {
             System.out.println("No solution found!");
@@ -358,14 +318,7 @@ public class RushHourIO {
         }
     }
 
-    /**
-     * Write solution to file
-     * @param solution List of game states representing the solution
-     * @param actions List of actions taken
-     * @param algorithm The search algorithm used
-     * @param filename Output filename
-     * @throws IOException if file cannot be written
-     */
+
     public static void writeSolutionToFile(List<RushHourGame> solution, List<String> actions,
                                            SearchAlgorithm algorithm, String filename) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
@@ -399,11 +352,6 @@ public class RushHourIO {
         }
     }
 
-    /**
-     * Print board with colored output for console
-     * @param game The game state to print
-     * @param action The action that was taken (for highlighting moved piece)
-     */
     private static void printColoredBoard(RushHourGame game, String action) {
         char[][] board = game.getBoard();
         int rows = game.getRows();
@@ -412,7 +360,7 @@ public class RushHourIO {
         // ANSI color codes
         String RESET = "\u001B[0m";
         String RED = "\u001B[31m";      // Primary piece
-        String GREEN = "\u001B[32m";    // Exit indicator (not used since K is outside)
+        String GREEN = "\u001B[32m";   
         String YELLOW = "\u001B[33m";   // Moved piece
         String BLUE = "\u001B[34m";     // Other pieces
 
@@ -453,21 +401,14 @@ public class RushHourIO {
         }
     }
 
-    /**
-     * Read user input from console
-     * @param prompt Message to display to user
-     * @return User input as string
-     */
+
     public static String getUserInput(String prompt) {
         Scanner scanner = new Scanner(System.in);
         System.out.print(prompt);
         return scanner.nextLine().trim();
     }
 
-    /**
-     * Get algorithm choice from user
-     * @return Algorithm choice (1-4)
-     */
+
     public static int getAlgorithmChoice() {
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
@@ -493,10 +434,7 @@ public class RushHourIO {
         return choice;
     }
 
-    /**
-     * Get heuristic choice from user (for algorithms that use heuristics)
-     * @return Heuristic choice (1-2)
-     */
+
     public static int getHeuristicChoice() {
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
@@ -520,32 +458,17 @@ public class RushHourIO {
         return choice;
     }
 
-    /**
-     * Validate that a file exists and is readable
-     * @param filename Path to file
-     * @return true if valid, false otherwise
-     */
     public static boolean isValidFile(String filename) {
         File file = new File(filename);
         return file.exists() && file.isFile() && file.canRead();
     }
 
-    /**
-     * Get output filename with timestamp
-     * @param baseName Base name for the file
-     * @param algorithm Algorithm used
-     * @return Full filename with timestamp
-     */
     public static String generateOutputFilename(String baseName, SearchAlgorithm algorithm) {
         String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String algName = algorithm.getAlgorithmName().replaceAll("[^a-zA-Z0-9]", "_");
         return "solution_" + baseName + "_" + algName + "_" + timestamp + ".txt";
     }
 
-    /**
-     * Print algorithm comparison table
-     * @param results Map of algorithm results
-     */
     public static void printComparisonTable(Map<String, Map<String, Object>> results) {
         System.out.println("\n=== Algorithm Comparison ===");
         System.out.println("Algorithm\t\tNodes\tTime(ms)\tSolution Length\tOptimal");

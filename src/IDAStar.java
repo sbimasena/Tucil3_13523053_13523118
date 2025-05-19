@@ -2,10 +2,7 @@ package src;
 
 import java.util.*;
 
-/**
- * Iterative Deepening A* (IDA*) algorithm implementation for Rush Hour puzzle
- * IDA* combines the space efficiency of iterative deepening with the guidance of A*
- */
+
 public class IDAStar extends SearchAlgorithm {
     private int heuristicType;
     private int threshold;
@@ -15,10 +12,6 @@ public class IDAStar extends SearchAlgorithm {
     public static final int HEURISTIC_MANHATTAN = 1;
     public static final int HEURISTIC_BLOCKING_PIECES = 2;
 
-    /**
-     * Constructor for IDA*
-     * @param heuristicType Type of heuristic to use (1 or 2)
-     */
     public IDAStar(int heuristicType) {
         this.heuristicType = heuristicType;
     }
@@ -49,13 +42,6 @@ public class IDAStar extends SearchAlgorithm {
         return null; // No solution found
     }
 
-    /**
-     * Depth-limited search with f-value threshold
-     * @param state Current game state
-     * @param g Current path cost
-     * @param path Current path (for cycle detection)
-     * @return SearchNode if solution found, null otherwise
-     */
     private SearchNode depthLimitedSearch(RushHourGame state, int g, List<RushHourGame> path) {
         nodesVisited++;
 
@@ -117,11 +103,6 @@ public class IDAStar extends SearchAlgorithm {
         return null; // No solution found at this threshold
     }
 
-    /**
-     * Calculate heuristic value based on selected heuristic type
-     * @param state Game state to evaluate
-     * @return Heuristic value
-     */
     private int calculateHeuristic(RushHourGame state) {
         switch (heuristicType) {
             case HEURISTIC_MANHATTAN:
@@ -146,10 +127,6 @@ public class IDAStar extends SearchAlgorithm {
                 "Current heuristic: " + heuristicName + ".";
     }
 
-    /**
-     * Get the name of the currently used heuristic
-     * @return Heuristic name
-     */
     public String getHeuristicName() {
         switch (heuristicType) {
             case HEURISTIC_MANHATTAN:
@@ -161,26 +138,14 @@ public class IDAStar extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Get the heuristic type being used
-     * @return Heuristic type (1 or 2)
-     */
     public int getHeuristicType() {
         return heuristicType;
     }
 
-    /**
-     * Set the heuristic type
-     * @param heuristicType New heuristic type (1 or 2)
-     */
     public void setHeuristicType(int heuristicType) {
         this.heuristicType = heuristicType;
     }
 
-    /**
-     * Check if the current heuristic is admissible
-     * @return true if heuristic is admissible
-     */
     public boolean isHeuristicAdmissible() {
         switch (heuristicType) {
             case HEURISTIC_MANHATTAN:
@@ -192,10 +157,6 @@ public class IDAStar extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Get statistics for this IDA* run
-     * @return Map containing various statistics
-     */
     public Map<String, Object> getStatistics() {
         Map<String, Object> stats = new HashMap<>();
         stats.put("algorithm", getAlgorithmName());
@@ -209,9 +170,6 @@ public class IDAStar extends SearchAlgorithm {
         return stats;
     }
 
-    /**
-     * Print detailed information about the IDA* search
-     */
     @Override
     public void printSolution() {
         System.out.println("=== " + getAlgorithmName() + " Results ===");
@@ -256,11 +214,6 @@ public class IDAStar extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Print board with colored output for primary piece, exit, and moved piece
-     * @param game The game state to print
-     * @param action The action that was taken (for highlighting moved piece)
-     */
     private void printColoredBoard(RushHourGame game, String action) {
         char[][] board = game.getBoard();
         int rows = game.getRows();
@@ -298,10 +251,6 @@ public class IDAStar extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Analyze IDA* performance and characteristics
-     * @return Analysis of IDA* performance
-     */
     public String analyzeAlgorithm() {
         if (solution == null) {
             return "No solution found - cannot analyze algorithm.";
@@ -337,10 +286,6 @@ public class IDAStar extends SearchAlgorithm {
         return analysis.toString();
     }
 
-    /**
-     * Compare IDA* with A* and other algorithms
-     * @return Comparative analysis
-     */
     public String compareWithOtherAlgorithms() {
         StringBuilder comparison = new StringBuilder();
         comparison.append("IDA* vs Other Algorithms:\n");
@@ -377,10 +322,6 @@ public class IDAStar extends SearchAlgorithm {
         return comparison.toString();
     }
 
-    /**
-     * Guarantees optimal solution?
-     * @return true if heuristic is admissible
-     */
     public boolean guaranteesOptimalSolution() {
         return isHeuristicAdmissible();
     }

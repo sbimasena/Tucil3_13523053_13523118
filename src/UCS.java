@@ -2,10 +2,6 @@ package src;
 
 import java.util.*;
 
-/**
- * Uniform Cost Search (UCS) algorithm implementation for Rush Hour puzzle
- * UCS expands nodes in order of their path cost from the start
- */
 public class UCS extends SearchAlgorithm {
 
     @Override
@@ -82,10 +78,6 @@ public class UCS extends SearchAlgorithm {
                 "because each move has the same cost.";
     }
 
-    /**
-     * Override findInFrontier to be more efficient for UCS
-     * Since we need to check g values, we implement it specifically
-     */
     @Override
     protected SearchNode findInFrontier(PriorityQueue<SearchNode> frontier, RushHourGame state) {
         for (SearchNode n : frontier) {
@@ -96,10 +88,6 @@ public class UCS extends SearchAlgorithm {
         return null;
     }
 
-    /**
-     * Get statistics for this UCS run
-     * @return Map containing various statistics
-     */
     public Map<String, Object> getStatistics() {
         Map<String, Object> stats = new HashMap<>();
         stats.put("algorithm", getAlgorithmName());
@@ -110,9 +98,6 @@ public class UCS extends SearchAlgorithm {
         return stats;
     }
 
-    /**
-     * Print detailed information about the UCS search
-     */
     @Override
     public void printSolution() {
         System.out.println("=== " + getAlgorithmName() + " Results ===");
@@ -146,11 +131,6 @@ public class UCS extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Print board with colored output for primary piece, exit, and moved piece
-     * @param game The game state to print
-     * @param action The action that was taken (for highlighting moved piece)
-     */
     private void printColoredBoard(RushHourGame game, String action) {
         char[][] board = game.getBoard();
         int rows = game.getRows();
@@ -188,10 +168,6 @@ public class UCS extends SearchAlgorithm {
         }
     }
 
-    /**
-     * Compare UCS with BFS behavior
-     * @return true if UCS behaves identically to BFS for this domain
-     */
     public boolean isEquivalentToBFS() {
         // In Rush Hour, all moves have the same cost (1), so UCS will explore
         // nodes in the same order as BFS (breadth-first order)

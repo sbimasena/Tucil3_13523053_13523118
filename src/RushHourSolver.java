@@ -3,27 +3,17 @@ package src;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * RushHourSolver is the main orchestrator for solving Rush Hour puzzles
- * It coordinates between input/output and the various search algorithms
- */
 public class RushHourSolver {
     private RushHourGame initialGame;
     private Map<String, SearchAlgorithm> algorithms;
     private Map<String, Map<String, Object>> results;
 
-    /**
-     * Constructor for RushHourSolver
-     */
     public RushHourSolver() {
         this.algorithms = new HashMap<>();
         this.results = new HashMap<>();
         initializeAlgorithms();
     }
 
-    /**
-     * Initialize all available search algorithms
-     */
     private void initializeAlgorithms() {
         algorithms.put("UCS", new UCS());
         algorithms.put("GBFS", new GBFS(1)); // Default to heuristic 1
@@ -31,10 +21,6 @@ public class RushHourSolver {
         algorithms.put("IDA*", new IDAStar(1)); // Default to heuristic 1
     }
 
-    /**
-     * Main execution method for console interface
-     * @param args Command line arguments (optional: filename)
-     */
     public static void main(String[] args) {
         RushHourSolver solver = new RushHourSolver();
 
@@ -66,11 +52,6 @@ public class RushHourSolver {
         }
     }
 
-    /**
-     * Load game from file
-     * @param filename Path to test case file
-     * @throws IOException if file cannot be loaded
-     */
     public void loadGame(String filename) throws IOException {
         this.initialGame = RushHourIO.loadGameFromFile(filename);
         System.out.println("Game loaded successfully!");
@@ -82,9 +63,6 @@ public class RushHourSolver {
         System.out.println(initialGame);
     }
 
-    /**
-     * Run interactive mode for algorithm selection and execution
-     */
     private void runInteractiveMode() {
         Scanner scanner = new Scanner(System.in);
         boolean continueRunning = true;
@@ -134,9 +112,6 @@ public class RushHourSolver {
         System.out.println("Thank you for using Rush Hour Solver!");
     }
 
-    /**
-     * Run a single selected algorithm
-     */
     private void runSingleAlgorithm() {
         if (initialGame == null) {
             System.out.println("No game loaded. Please load a test case first.");
@@ -164,9 +139,6 @@ public class RushHourSolver {
         saveResultsOption(algorithm);
     }
 
-    /**
-     * Run all algorithms for comparison
-     */
     private void runAllAlgorithms() {
         if (initialGame == null) {
             System.out.println("No game loaded. Please load a test case first.");
@@ -221,10 +193,6 @@ public class RushHourSolver {
         saveComparisonOption();
     }
 
-    /**
-     * Run a specific algorithm on the current game
-     * @param algorithm The algorithm to run
-     */
     private void runAlgorithm(SearchAlgorithm algorithm) {
         long startTime = System.currentTimeMillis();
 
@@ -246,10 +214,6 @@ public class RushHourSolver {
         }
     }
 
-    /**
-     * Display results of a single algorithm run
-     * @param algorithm The algorithm that was run
-     */
     private void displayResults(SearchAlgorithm algorithm) {
         if (algorithm.getSolution() != null && !algorithm.getSolution().isEmpty()) {
             // Prepare solution and actions with final step
@@ -274,9 +238,6 @@ public class RushHourSolver {
         }
     }
 
-    /**
-     * Display the current board state
-     */
     private void displayCurrentBoard() {
         if (initialGame == null) {
             System.out.println("No game loaded. Please load a test case first.");
@@ -295,9 +256,7 @@ public class RushHourSolver {
                 ", Col " + (initialGame.getExitCol() + 1));
     }
 
-    /**
-     * Load a new test case
-     */
+
     private void loadNewTestCase() {
         try {
             String filename = RushHourIO.getUserInput("Enter new test case filename: ");
@@ -316,9 +275,6 @@ public class RushHourSolver {
         }
     }
 
-    /**
-     * Display previous algorithm results
-     */
     private void displayPreviousResults() {
         if (results.isEmpty()) {
             System.out.println("No previous results available.");
@@ -329,11 +285,6 @@ public class RushHourSolver {
         RushHourIO.printComparisonTable(results);
     }
 
-    /**
-     * Select algorithm based on user choice
-     * @param choice User's algorithm choice (1-4)
-     * @return Selected algorithm
-     */
     private SearchAlgorithm selectAlgorithm(int choice) {
         switch (choice) {
             case 1:
@@ -349,21 +300,11 @@ public class RushHourSolver {
         }
     }
 
-    /**
-     * Check if algorithm requires heuristic selection
-     * @param algorithmChoice Algorithm choice (1-4)
-     * @return true if heuristic is needed
-     */
     private boolean requiresHeuristic(int algorithmChoice) {
         // UCS doesn't use heuristic, others do
         return algorithmChoice != 1;
     }
 
-    /**
-     * Set heuristic for algorithms that support it
-     * @param algorithm The algorithm
-     * @param heuristicChoice Heuristic choice (1-2)
-     */
     private void setAlgorithmHeuristic(SearchAlgorithm algorithm, int heuristicChoice) {
         if (algorithm instanceof GBFS) {
             ((GBFS) algorithm).setHeuristicType(heuristicChoice);
@@ -374,10 +315,6 @@ public class RushHourSolver {
         }
     }
 
-    /**
-     * Offer to save results to file
-     * @param algorithm The algorithm that was run
-     */
     private void saveResultsOption(SearchAlgorithm algorithm) {
         if (algorithm.getSolution() == null || algorithm.getSolution().isEmpty()) {
             return;
@@ -404,9 +341,6 @@ public class RushHourSolver {
         }
     }
 
-    /**
-     * Offer to save comparison results to file
-     */
     private void saveComparisonOption() {
         String input = RushHourIO.getUserInput("Save comparison results to file? (y/n): ");
 
@@ -416,23 +350,11 @@ public class RushHourSolver {
         }
     }
 
-    /**
-     * Load game from file (public method for external access)
-     * @param filename Path to test case file
-     * @return Loaded RushHourGame
-     * @throws IOException if file cannot be loaded
-     */
     public RushHourGame loadGameFromFile(String filename) throws IOException {
         this.initialGame = RushHourIO.loadGameFromFile(filename);
         return this.initialGame;
     }
 
-    /**
-     * Solve using specific algorithm (public method for external access)
-     * @param algorithmType Algorithm type ("UCS", "GBFS", "A*", "IDA*")
-     * @param heuristicType Heuristic type (1 or 2, ignored for UCS)
-     * @return Solution path
-     */
     public List<RushHourGame> solve(String algorithmType, int heuristicType) {
         if (initialGame == null) {
             throw new IllegalStateException("No game loaded. Call loadGameFromFile first.");
@@ -461,10 +383,6 @@ public class RushHourSolver {
         return algorithm.solve(gameCopy);
     }
 
-    /**
-     * Get statistics from last run
-     * @return Statistics map
-     */
     public Map<String, Map<String, Object>> getResults() {
         return new HashMap<>(results);
     }

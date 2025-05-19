@@ -13,10 +13,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.UnsupportedLookAndFeelException;
 
-/**
- * RushHourGUI provides the main graphical user interface for the Rush Hour puzzle solver
- * Features algorithm selection, file loading, solution visualization, and animation controls
- */
+
 public class RushHourGUI extends JFrame {
     // Main components
     private RushHourGame currentGame;
@@ -66,9 +63,7 @@ public class RushHourGUI extends JFrame {
         setupEventHandlers();
     }
 
-    /**
-     * Initialize the GUI components and layout
-     */
+
     private void initializeGUI() {
         setTitle("Rush Hour Puzzle Solver");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -94,9 +89,7 @@ public class RushHourGUI extends JFrame {
         updateGUIState(false);
     }
 
-    /**
-     * Create the game display panel
-     */
+
     private void createGamePanel() {
         gamePanel = new GamePanel();
         gamePanel.setPreferredSize(new Dimension(GAME_PANEL_SIZE, GAME_PANEL_SIZE));
@@ -105,9 +98,6 @@ public class RushHourGUI extends JFrame {
         gameAnimation = new GameAnimation(gamePanel);
     }
 
-    /**
-     * Create the control panel with algorithm selection and file operations
-     */
     private void createControlPanel() {
         controlPanel = new JPanel(new GridBagLayout());
         controlPanel.setBorder(BorderFactory.createTitledBorder("Controls"));
@@ -167,9 +157,6 @@ public class RushHourGUI extends JFrame {
         controlPanel.add(statusLabel, gbc);
     }
 
-    /**
-     * Create the animation control panel
-     */
     private void createAnimationControlPanel() {
         animationPanel = new JPanel(new FlowLayout());
         animationPanel.setBorder(BorderFactory.createTitledBorder("Animation Controls"));
@@ -203,9 +190,6 @@ public class RushHourGUI extends JFrame {
         setAnimationControlsEnabled(false);
     }
 
-    /**
-     * Create the results display panel
-     */
     private void createResultsPanel() {
         resultsPanel = new JPanel(new BorderLayout());
         resultsPanel.setBorder(BorderFactory.createTitledBorder("Results"));
@@ -230,9 +214,6 @@ public class RushHourGUI extends JFrame {
         resultsPanel.add(scrollPane, BorderLayout.CENTER);
     }
 
-    /**
-     * Setup the main layout of the window
-     */
     private void setupMainLayout() {
         // Create center panel for game display
         JPanel centerPanel = new JPanel(new FlowLayout());
@@ -247,9 +228,6 @@ public class RushHourGUI extends JFrame {
         System.out.println("Layout setup complete");
     }
 
-    /**
-     * Setup event handlers for all GUI components
-     */
     private void setupEventHandlers() {
         // Algorithm selection handler
         algorithmComboBox.addActionListener(e -> {
@@ -319,9 +297,6 @@ public class RushHourGUI extends JFrame {
         });
     }
 
-    /**
-     * Load a puzzle from file
-     */
     private void loadPuzzle() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("Text files", "txt"));
@@ -359,9 +334,6 @@ public class RushHourGUI extends JFrame {
         }
     }
 
-    /**
-     * Solve the current puzzle using selected algorithm
-     */
     private void solvePuzzle() {
         if (currentGame == null) {
             JOptionPane.showMessageDialog(this,
@@ -377,8 +349,6 @@ public class RushHourGUI extends JFrame {
 
         // Create algorithm instance
         currentAlgorithm = createAlgorithm(algorithmIndex, heuristicIndex);
-
-        // Solve in background thread to keep GUI responsive
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -391,7 +361,6 @@ public class RushHourGUI extends JFrame {
                 currentSolution = currentAlgorithm.solve(gameCopy);
                 currentActions = currentAlgorithm.getSolutionActions();
 
-                // Append final step: remove 'P' after exit
                 if (currentSolution != null && !currentSolution.isEmpty()) {
                     List<RushHourGame> solutionWithExit = new ArrayList<>(currentSolution);
                     List<String> actionsWithExit = new ArrayList<>(currentActions);
@@ -414,12 +383,10 @@ public class RushHourGUI extends JFrame {
                     displayResults();
                     setupAnimation();
                     statusLabel.setText("Solution found! Ready to animate.");
-                    
-                    // Enable save button now that we have a solution
                     saveButton.setEnabled(true);
                 } else {
                     statusLabel.setText("No solution found.");
-                    saveButton.setEnabled(false); // Ensure save button is disabled
+                    saveButton.setEnabled(false); 
                     
                     JOptionPane.showMessageDialog(RushHourGUI.this,
                             "No solution found for this puzzle.",
@@ -432,9 +399,6 @@ public class RushHourGUI extends JFrame {
         worker.execute();
     }
 
-    /**
-     * Save the current solution to a file
-     */
     private void saveSolution() {
         if (currentSolution == null || currentSolution.isEmpty() || currentAlgorithm == null) {
             JOptionPane.showMessageDialog(this,
@@ -487,9 +451,6 @@ public class RushHourGUI extends JFrame {
         }
     }
 
-    /**
-     * Create algorithm instance based on user selection
-     */
     private SearchAlgorithm createAlgorithm(int algorithmIndex, int heuristicIndex) {
         switch (algorithmIndex) {
             case 0:
@@ -505,9 +466,6 @@ public class RushHourGUI extends JFrame {
         }
     }
 
-    /**
-     * Display the search results
-     */
     private void displayResults() {
         if (currentAlgorithm == null) return;
 
@@ -523,9 +481,7 @@ public class RushHourGUI extends JFrame {
         resultsTextArea.append("Solution Steps:\n");
     }
 
-    /**
-     * Setup animation with the current solution
-     */
+
     private void setupAnimation() {
         if (currentSolution != null && currentActions != null) {
             gameAnimation.setSolution(currentSolution, currentActions);
@@ -534,9 +490,7 @@ public class RushHourGUI extends JFrame {
         }
     }
 
-    /**
-     * Reset the game to initial state
-     */
+ 
     private void resetGame() {
         if (currentGame != null) {
             gamePanel.setGame(currentGame);
@@ -559,9 +513,6 @@ public class RushHourGUI extends JFrame {
         }
     }
 
-    /**
-     * Clear results display
-     */
     private void clearResults() {
         nodesVisitedLabel.setText("Nodes Visited: -");
         executionTimeLabel.setText("Execution Time: -");
@@ -571,9 +522,6 @@ public class RushHourGUI extends JFrame {
         setAnimationControlsEnabled(false);
     }
 
-    /**
-     * Update GUI state based on whether a puzzle is loaded
-     */
     private void updateGUIState(boolean puzzleLoaded) {
         solveButton.setEnabled(puzzleLoaded);
         resetButton.setEnabled(puzzleLoaded);
@@ -581,9 +529,6 @@ public class RushHourGUI extends JFrame {
         saveButton.setEnabled(puzzleLoaded && currentSolution != null && !currentSolution.isEmpty());
     }
 
-    /**
-     * Enable/disable animation controls
-     */
     private void setAnimationControlsEnabled(boolean enabled) {
         playButton.setEnabled(enabled);
         pauseButton.setEnabled(enabled);
@@ -592,9 +537,7 @@ public class RushHourGUI extends JFrame {
         speedSlider.setEnabled(enabled);
     }
 
-    /**
-     * Main method to run the GUI application
-     */
+ 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
@@ -612,9 +555,6 @@ public class RushHourGUI extends JFrame {
     }
 }
 
-/**
- * Interface for animation event callbacks
- */
 interface AnimationListener {
     void onMoveChanged(int currentMove, int totalMoves);
     void onAnimationComplete();
