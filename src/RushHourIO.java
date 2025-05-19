@@ -45,7 +45,6 @@ public class RushHourIO {
             char[][] board = game.getBoard();
             boolean exitFound = false;
 
-
             // Detect top exit before reading the board
             String peekLine = reader.readLine();
             if (peekLine != null && peekLine.trim().length() == 1 && peekLine.trim().charAt(0) == 'K') {
@@ -56,54 +55,94 @@ public class RushHourIO {
                 peekLine = reader.readLine(); // Move to first board line
             }
 
-            // Read board configuration
+            // Read all lines after header and possible top exit
+            List<String> allLines = new ArrayList<>();
+            if (peekLine != null) allLines.add(peekLine);
+            String line;
+            while ((line = reader.readLine()) != null) {
+                allLines.add(line);
+            }
+
+            // Find possible bottom exit line (a line with only 'K' and spaces)
+            int bottomExitIdx = -1;
+            for (int i = 0; i < allLines.size(); i++) {
+                String l = allLines.get(i);
+                if (l.trim().length() == 1 && l.trim().charAt(0) == 'K') {
+                    bottomExitIdx = i;
+                    break;
+                }
+            }
+
+            int boardEndIdx = (bottomExitIdx == -1) ? allLines.size() : bottomExitIdx;
+            List<String> boardLines = allLines.subList(0, boardEndIdx);
+
+            // Validate number of board lines
+            if (boardLines.size() != rows) {
+                throw new IOException("Number of board lines (" + boardLines.size() + ") does not match specified rows (" + rows + ")");
+            }
+
+            // Validate each board line's length
+            for (int i = 0; i < boardLines.size(); i++) {
+                String bl = boardLines.get(i);
+                int expected1 = cols;
+                int expected2 = cols + 1; // for possible exit/leading space
+                if (bl.length() != expected1 && bl.length() != expected2) {
+                    throw new IOException("Row " + (i + 1) + " has incorrect length: expected " + expected1 + " or " + expected2 + ", got " + bl.length());
+                }
+            }
+
+            // Fill the board as before
             for (int i = 0; i < rows; i++) {
-                String line;
-                if (i == 0) {
-                    line = peekLine;
-                } else {
-                    line = reader.readLine();
-                }
-                if (line == null) {
-                    throw new IOException("Unexpected end of file at row " + (i + 1));
-                }
+                String bl = boardLines.get(i);
                 // Do not trim leading spaces. Use first character to determine row type.
-                if (line.length() == cols + 1 && line.charAt(0) == 'K') {
+                if (bl.length() == cols + 1 && bl.charAt(0) == 'K') {
                     // Exit on left
                     for (int j = 1; j <= cols; j++) {
-                        board[i][j - 1] = line.charAt(j);
+                        board[i][j - 1] = bl.charAt(j);
                     }
                     game.setExitPosition(i, -1);
                     exitFound = true;
-                } else if (line.length() == cols + 1 && line.charAt(cols) == 'K') {
+                } else if (bl.length() == cols + 1 && bl.charAt(cols) == 'K') {
                     // Exit on right
                     for (int j = 0; j < cols; j++) {
-                        board[i][j] = line.charAt(j);
+                        board[i][j] = bl.charAt(j);
                     }
                     game.setExitPosition(i, cols);
                     exitFound = true;
-                } else if (line.length() == cols + 1 && line.charAt(0) == ' ') {
+                } else if (bl.length() == cols + 1 && bl.charAt(0) == ' ') {
                     // Normal row with leading space for visual alignment
                     for (int j = 1; j <= cols; j++) {
-                        board[i][j - 1] = line.charAt(j);
+                        board[i][j - 1] = bl.charAt(j);
                     }
-                } else if (line.length() == cols) {
+                } else if (bl.length() == cols) {
                     // Normal row, no leading space
                     for (int j = 0; j < cols; j++) {
-                        board[i][j] = line.charAt(j);
+                        board[i][j] = bl.charAt(j);
                     }
                 } else {
-                    System.err.println("DEBUG: Row " + (i + 1) + " line: '" + line + "' length: " + line.length() + ", cols: " + cols);
                     throw new IOException("Row " + (i + 1) + " has incorrect length or invalid 'K' placement");
                 }
             }
 
-            // Check for bottom exit after reading the board
-            String bottomLine = reader.readLine();
-            if (bottomLine != null && bottomLine.trim().length() == 1 && bottomLine.trim().charAt(0) == 'K') {
+            // Handle bottom exit if present
+            if (bottomExitIdx != -1) {
+                String bottomLine = allLines.get(bottomExitIdx);
                 int colK = bottomLine.indexOf('K');
                 game.setExitPosition(rows, colK); // Exit is below the board
                 exitFound = true;
+                // Check for extra non-empty lines after bottom exit
+                for (int i = bottomExitIdx + 1; i < allLines.size(); i++) {
+                    if (!allLines.get(i).trim().isEmpty()) {
+                        throw new IOException("Extra non-empty line found after board and exit: '" + allLines.get(i) + "'");
+                    }
+                }
+            } else {
+                // Check for extra non-empty lines after board
+                for (int i = boardEndIdx; i < allLines.size(); i++) {
+                    if (!allLines.get(i).trim().isEmpty()) {
+                        throw new IOException("Extra non-empty line found after board: '" + allLines.get(i) + "'");
+                    }
+                }
             }
 
             if (!exitFound) {
@@ -112,6 +151,20 @@ public class RushHourIO {
 
             // Validate and initialize game state
             validateAndInitializeGame(game);
+
+            // Validate number of unique pieces (excluding 'P')
+            Set<Character> uniquePieces = new HashSet<>();
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    char c = board[i][j];
+                    if (c != '.' && c != 'P') {
+                        uniquePieces.add(c);
+                    }
+                }
+            }
+            if (uniquePieces.size() != numPieces) {
+                throw new IOException("Number of unique pieces (excluding 'P') in board (" + uniquePieces.size() + ") does not match specified number (" + numPieces + ")");
+            }
 
             return game;
 
