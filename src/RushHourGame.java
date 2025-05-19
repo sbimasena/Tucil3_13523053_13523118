@@ -634,4 +634,15 @@ public class RushHourGame {
         }
         pieces.get(piece).add(new int[]{row, col});
     }
+
+    // Removes the primary piece ('P') from the board and pieces map
+    public void removePrimaryPiece() {
+        List<int[]> primaryPositions = pieces.get('P');
+        if (primaryPositions != null) {
+            for (int[] pos : primaryPositions) {
+                board[pos[0]][pos[1]] = '.';
+            }
+            pieces.remove('P');
+        }
+    }
 }

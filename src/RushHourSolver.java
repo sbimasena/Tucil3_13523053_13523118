@@ -252,10 +252,16 @@ public class RushHourSolver {
      */
     private void displayResults(SearchAlgorithm algorithm) {
         if (algorithm.getSolution() != null && !algorithm.getSolution().isEmpty()) {
+            // Prepare solution and actions with final step
+            List<RushHourGame> solutionWithExit = new ArrayList<>(algorithm.getSolution());
+            List<String> actionsWithExit = new ArrayList<>(algorithm.getSolutionActions());
+            RushHourGame finalState = new RushHourGame(solutionWithExit.get(solutionWithExit.size() - 1));
+            finalState.removePrimaryPiece();
+            solutionWithExit.add(finalState);
+            actionsWithExit.add("EXIT");
+
             System.out.println("\n=== Detailed Solution ===");
-            RushHourIO.writeSolutionToConsole(algorithm.getSolution(),
-                    algorithm.getSolutionActions(),
-                    algorithm);
+            RushHourIO.writeSolutionToConsole(solutionWithExit, actionsWithExit, algorithm);
 
             // Additional analysis for specific algorithms
             if (algorithm instanceof AStar) {
@@ -383,9 +389,14 @@ public class RushHourSolver {
             try {
                 String filenameInputted = RushHourIO.getUserInput("Enter filename (without extension): ");
                 String filename = "output/" + filenameInputted + ".txt";
-                RushHourIO.writeSolutionToFile(algorithm.getSolution(),
-                        algorithm.getSolutionActions(),
-                        algorithm, filename);
+                // Prepare solution and actions with final step
+                List<RushHourGame> solutionWithExit = new ArrayList<>(algorithm.getSolution());
+                List<String> actionsWithExit = new ArrayList<>(algorithm.getSolutionActions());
+                RushHourGame finalState = new RushHourGame(solutionWithExit.get(solutionWithExit.size() - 1));
+                finalState.removePrimaryPiece();
+                solutionWithExit.add(finalState);
+                actionsWithExit.add("EXIT");
+                RushHourIO.writeSolutionToFile(solutionWithExit, actionsWithExit, algorithm, filename);
                 System.out.println("Solution saved to: " + filename);
             } catch (IOException e) {
                 System.err.println("Error saving file: " + e.getMessage());

@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -389,6 +390,18 @@ public class RushHourGUI extends JFrame {
                 RushHourGame gameCopy = new RushHourGame(currentGame);
                 currentSolution = currentAlgorithm.solve(gameCopy);
                 currentActions = currentAlgorithm.getSolutionActions();
+
+                // Append final step: remove 'P' after exit
+                if (currentSolution != null && !currentSolution.isEmpty()) {
+                    List<RushHourGame> solutionWithExit = new ArrayList<>(currentSolution);
+                    List<String> actionsWithExit = new ArrayList<>(currentActions);
+                    RushHourGame finalState = new RushHourGame(solutionWithExit.get(solutionWithExit.size() - 1));
+                    finalState.removePrimaryPiece();
+                    solutionWithExit.add(finalState);
+                    actionsWithExit.add("EXIT");
+                    currentSolution = solutionWithExit;
+                    currentActions = actionsWithExit;
+                }
 
                 return null;
             }
